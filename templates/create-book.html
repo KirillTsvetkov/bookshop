@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Создание книги
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Создать новую книгу</h1>
+    <form method="post">
+        <lable for="title">Название книги</lable>
+        <input type="text" name="title" id="title" class="form-control" placeholder="Введите название книги">
+        <br>
+        <lable for="genre">Выберите жанр</lable>
+        <select name="genre" id="genre" class="form-control">
+            {% for genre in genres %}
+                <option value="{{genre.id}}">{{ genre.genre_name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <lable for="author">Выберите автора</lable>
+        <select name="author" id="author" class="form-control">
+            {% for author in authors %}
+                <option value="{{author.id}}">{{ author.name + " "+ author.surname}}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <lable for="publisher">Выберите издателя</lable>
+        <select name="publisher" id="publisher" class="form-control">
+            {% for publisher in publishers %}
+                <option value="{{publisher.id}}">{{ publisher.publisher_name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <lable for="cover_type">Выберите тип обложки</lable>
+        <select name="cover_type" id="cover_type" class="form-control">
+            <option value="1">Твердая</option>
+            <option value="">Мягкая</option>
+        </select>
+        <br>
+        <lable for="year">Год</lable>
+        <input type="number" name="year" id="year" class="form-control" placeholder="Введите название книги">
+        <br>
+        <lable for="number_of_pages">Введите кол-во страниц</lable>
+        <input type="number" name="number_of_pages" id="number_of_pages" class="form-control" placeholder="Введите кол-во страниц">
+        <br>
+        <lable for="isbn">isbn</lable>
+        <input type="text" name="isbn" id="isbn" class="form-control" placeholder="Введите isbn">
+        <br>
+        <lable for="annotation">Аннотация</lable>
+        <textarea name="annotation" id="annotation" cols="30" rows="10" class="form-control"></textarea>
+        <br>
+        <lable for="title">Slug</lable>
+        <input type="text" name="slug" id="slug" class="form-control" placeholder="Введите slug">
+        <br>
+        <lable for="price">Введите цену</lable>
+        <input type="number" name="price" id="price" class="form-control" placeholder="Введите цену">
+        <br>
+        <input type="submit" class="btn btn-success" value="Создать">
+    </form>
+</div>
+{% endblock %}

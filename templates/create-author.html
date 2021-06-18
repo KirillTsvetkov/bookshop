@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Создание Автора
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Создать нового автора</h1>
+    <form method="post">
+        <lable for="name">Имя</lable>
+        <input type="text" name="name" id="name" class="form-control" placeholder="Введите имя автора">
+        <lable for="surname">Фамилия</lable>
+        <input type="text" name="surname" id="surname" class="form-control" placeholder="Введите имя автора">
+        <lable for="patronymic">Отчество</lable>
+        <input type="text" name="patronymic" id="patronymic" class="form-control" placeholder="Введите отчество автора">
+        <br>
+        <input type="submit" class="btn btn-success" value="Создать">
+    </form>
+</div>
+{% endblock %}
