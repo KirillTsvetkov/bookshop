@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
@@ -87,6 +87,162 @@ class Book(db.Model):
         return '<Book %r>' % self.title
 
 
+@app.route('/genres-list', methods=["GET"])
+def genreslist():
+    genres = Genre.query.all()
+    return render_template("genres-list.html", genres=genres)
+
+
+@app.route('/publishers-list', methods=["GET"])
+def publisherslist():
+    publishers = Publisher.query.all()
+    return render_template("publishers-list.html", publishers=publishers)
+
+
+@app.route('/authors-list', methods=["GET"])
+def authorslist():
+    authors = Author.query.all()
+    return render_template("authors-list.html", authors=authors)
+
+
+@app.route('/books-list', methods=["GET"])
+def bookslist():
+    books = Book.query.all()
+    return render_template("books-list.html", books=books)
+
+
+@app.route('/orders-list', methods=["GET"])
+def orderslist():
+    orders = Order.query.all()
+    return render_template("orders-list.html", orders=orders)
+
+
+@app.route('/order_items-list', methods=["GET"])
+def order_itemslist():
+    order_items = OrderItem.query.all()
+    return render_template("order_items-list.html", order_items=order_items)
+
+
+@app.route('/users-list', methods=["GET"])
+def userslist():
+    users = User.query.all()
+    return render_template("users-list.html", users=users)
+
+
+@app.route('/edit-genre/<int:id>', methods=["GET"])
+def edit_genre(id):
+    genre = Genre.query.get(id)
+    return render_template("edit-genre.html", genre=genre)
+
+
+@app.route('/create-genre', methods=["GET"])
+def create_genre():
+    return render_template("create-genre.html")
+
+
+@app.route('/create-publisher', methods=["GET"])
+def create_publisher():
+    return render_template("create-publisher.html")
+
+
+@app.route('/genres', methods=["GET", "POST"])
+def handle_genres():
+    if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            genre = Genre(genre_name=data['genre_name'])
+            try:
+                db.session.add(genre)
+                db.session.commit()
+                return {"result": 0, "msg":f"genre {genre} успешно добавлен"}
+            except:
+                return {"result": 1, "error":"ошибка добавления"}
+        else:
+            return {"result": 1, "error": "The request payload is not in JSON format"}
+    else:
+        genres = Genre.query.all()
+        results = [
+            {
+                "genre_name": genre.genre_name
+            } for genre in genres]
+        return {"coutn": len(results), "genres": results}
+
+
+@app.route('/genre/<int:id>', methods=["PUT"])
+def update_genre(id):
+    genre = Genre.query.get(id)
+    data = request.get_json()
+    genre.genre_name = data['genre_name']
+    try:
+        db.session.commit()
+        results = {
+            "genre_name": genre.genre_name
+        }
+        return {"result": 0, "genre": results}
+    except:
+        return {"result": 1}
+
+
+@app.route('/genre/<int:id>', methods=["GET"])
+def get_genre(id):
+    genre = Genre.query.get(id)
+    results = {
+        "genre_name": genre.genre_name
+    }
+    return {"genre": results}
+
+
+@app.route('/genre/<int:id>', methods=["DELETE"])
+def delete_genre(id):
+    genre = Genre.query.get(id)
+    try:
+        db.session.delete(genre)
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
+
+
+@app.route('/books', methods=["GET", "POST"])
+def handle_books():
+    if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            book = Book(title = data['title'],
+                        price=float(data['price']), number_of_pages=data['number_of_pages'],
+                        year=data['year'], isbn=data['isbn'],
+                        cover_type=data['cover_type'],
+                        annotation=data['annotation'], slug=data['slug'],
+                        genre_id=data['genre_id'], publisher_id=data['publisher_id'],
+                        author_id=data['author_id'])
+            print(book.title, book.price)
+            try:
+                db.session.add(book)
+                db.session.commit()
+                return {"result": 0, "msg":f"book {book} успешно добавлен"}
+            except:
+                return {"result": 1, "error":"ошибка добавления"}
+        else:
+            return {"result": 1, "error": "The request payload is not in JSON format"}
+    else:
+        books = Book.query.all()
+        results = [
+            {
+                "title": book.title,
+                "price": float(book.price),
+                "number_of_pages": book.number_of_pages,
+                "year": book.year,
+                "isbn": book.isbn,
+                "cover_type": book.cover_type,
+                "annotation": book.annotation,
+                "slug": book.slug,
+                "genre_id": book.genre_id,
+                "publisher_id": book.publisher_id,
+                "author_id": book.author_id
+            } for book in books]
+        return {"coutn": len(results), "users": results}
+
+
 @app.route('/book/<int:id>', methods=["GET"])
 def get_book(id):
     book = Book.query.get(id)
@@ -131,16 +287,147 @@ def update_book(id):
     return {"book": results}
 
 
-@app.route('/books', methods=["GET"])
-def get_books():
-    books = Book.query.all()
-    results = [
-        {
-            "title": book.title,
-            "price": book.price
-        } for book in books]
+@app.route('/book/<int:id>', methods=["DELETE"])
+def delete_book(id):
+    book = Book.query.get(id)
+    try:
+        db.session.delete(book)
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
 
-    return {"coutn": len(results), "books": results}
+
+@app.route('/order_items', methods=["GET", "POST"])
+def handle_order_items():
+    if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            count=0
+            for item in data:
+                order_item = OrderItem(order_id=item['order_id'], quantity=item['quantity'],
+                              cost=item['cost'], book_id=item['book_id'])
+                try:
+                    db.session.add(order_item)
+                    db.session.commit()
+                    order = order_item.order
+                    order.total += order_item.cost
+                    db.session.commit()
+                    count=count+1
+                except:
+                    return {"result": 1, "error": "ошибка добавления"}
+            if(count==len(data)):
+                return {"result": 0, "msg": 'Добавленно "+str(count)+" Записей"'}
+        else:
+            return {"result": 1, "error": "The request payload is not in JSON format"}
+    else:
+        orders = Order.query.all()
+        results = [
+            {
+                "total": order.total,
+                "date": order.date,
+                "user_id": order.user_id
+            } for order in orders]
+        return {"coutn": len(results), "orders": results}
+
+
+@app.route('/order_item/<int:id>', methods=["GET"])
+def get_order_item(id):
+    order_item = OrderItem.query.get(id)
+    results = {
+        "order_id": order_item.order_id,
+        "cost": order_item.cost,
+        "book_id": order_item.book_id,
+        "quantity": order_item.quantity
+    }
+    return {"order_item": results}
+
+
+@app.route('/order_item/<int:id>', methods=["DELETE"])
+def delete_order_item(id):
+    order_item = OrderItem.query.get(id)
+    try:
+        db.session.delete(order_item)
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
+
+
+@app.route('/order_item/<int:id>', methods=["PUT"])
+def update_order_item(id):
+    order_item = OrderItem.query.get(id)
+    data = request.get_json()
+    order_item.book_id = data['book_id']
+    order_item.cost = data['cost']
+    order_item.order_id = data['order_id']
+    order_item.quantity = data['quantity']
+    try:
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
+
+
+@app.route('/orders', methods=["GET", "POST"])
+def handle_orders():
+    if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            order = Order(user_id=data['user_id'], date=data['date'], total=data['total'])
+            try:
+                db.session.add(order)
+                db.session.commit()
+                return {"result": 0, "msg": f"order {order} успешно добавлен"}
+            except:
+                return {"result": 1, "error": "ошибка добавления"}
+        else:
+            return {"error": "The request payload is not in JSON format"}
+    else:
+        orders = Order.query.all()
+        results = [
+            {
+                "total": order.total,
+                "date": order.date,
+                "user_id": order.user_id
+            } for order in orders]
+        return {"coutn": len(results), "orders": results}
+
+
+@app.route('/order/<int:id>', methods=["DELETE"])
+def delete_order(id):
+    order = Order.query.get(id)
+    try:
+        db.session.delete(order)
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
+
+
+@app.route('/order/<int:id>', methods=["PUT"])
+def update_order(id):
+    order = Order.query.get(id)
+    data = request.get_json()
+    order.user_id = data['user_id']
+    order.total = data['total']
+    order.date = data['date']
+    try:
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
+
+
+@app.route('/order/<int:id>', methods=["GET"])
+def get_order(id):
+    order = Order.query.get(id)
+    results = {
+        "user_id": order.user_id,
+        "total": order.total,
+        "date": order.date
+    }
+    return {"order": results}
 
 
 @app.route('/authors', methods=["GET", "POST"])
@@ -152,9 +439,9 @@ def handle_authors():
             try:
                 db.session.add(author)
                 db.session.commit()
-                return {"msg":f"author {author} успешно добавлен"}
+                return {"result": 0, "msg":f"author {author} успешно добавлен"}
             except:
-                return {"error":"ошибка добавления"}
+                return {"result": 1, "error":"ошибка добавления"}
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
@@ -168,27 +455,41 @@ def handle_authors():
         return {"coutn": len(results), "authors": results}
 
 
-@app.route('/genres', methods=["GET", "POST"])
-def handle_genres():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            genre = Genre(genre_name=data['genre_name'])
-            try:
-                db.session.add(genre)
-                db.session.commit()
-                return {"msg":f"genre {genre} успешно добавлен"}
-            except:
-                return {"error":"ошибка добавления"}
-        else:
-            return {"error": "The request payload is not in JSON format"}
-    else:
-        genres = Genre.query.all()
-        results = [
-            {
-                "genre_name": genre.genre_name
-            } for genre in genres]
-        return {"coutn": len(results), "genres": results}
+@app.route('/author/<int:id>', methods=["DELETE"])
+def delete_author(id):
+    author = Author.query.get(id)
+    try:
+        db.session.delete(author)
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
+
+
+
+@app.route('/author/<int:id>', methods=["PUT"])
+def update_author(id):
+    author = Author.query.get(id)
+    data = request.get_json()
+    author.name = data['name']
+    author.surname = data['surname']
+    author.patronymic = data['patronymic']
+    try:
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
+
+
+@app.route('/author/<int:id>', methods=["GET"])
+def get_author(id):
+    author = Author.query.get(id)
+    results = {
+        "name": author.name,
+        "surname": author.surname,
+        "patronymic": author.patronymic
+    }
+    return {"author": results}
 
 
 @app.route('/publishers', methods=["GET", "POST"])
@@ -200,9 +501,9 @@ def handle_publishers():
             try:
                 db.session.add(publisher)
                 db.session.commit()
-                return {"msg":f"publisher {publisher} успешно добавлен"}
+                return {"result": 0, "msg":f"publisher {publisher} успешно добавлен"}
             except:
-                return {"error":"ошибка добавления"}
+                return {"result": 1, "error":"ошибка добавления"}
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
@@ -214,6 +515,37 @@ def handle_publishers():
         return {"coutn": len(results), "publishers": results}
 
 
+@app.route('/publisher/<int:id>', methods=["DELETE"])
+def delete_publisher(id):
+    publisher = Publisher.query.get(id)
+    try:
+        db.session.delete(publisher)
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
+
+
+@app.route('/publisher/<int:id>', methods=["PUT"])
+def update_publisher(id):
+    publisher = Publisher.query.get(id)
+    data = request.get_json()
+    publisher.publisher_name = data['publisher_name']
+    try:
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
+
+
+@app.route('/publisher/<int:id>', methods=["GET"])
+def get_publisher(id):
+    publisher = Publisher.query.get(id)
+    results = {
+        "publisher_name": publisher.publisher_name
+    }
+    return {"publisher_name": results}
+
 
 @app.route('/users', methods=["GET", "POST"])
 def handle_users():
@@ -224,9 +556,9 @@ def handle_users():
             try:
                 db.session.add(user)
                 db.session.commit()
-                return {"msg":f"user {user} успешно добавлен"}
+                return {"result": 0, "msg":f"user {user} успешно добавлен"}
             except:
-                return {"error":"ошибка добавления"}
+                return {"result": 1, "error":"ошибка добавления"}
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
@@ -243,47 +575,45 @@ def handle_users():
         return {"coutn": len(results), "users": results}
 
 
-
-@app.route('/books', methods=["GET", "POST"])
-def handle_books():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            book = Book(title = data['title'],
-                        price=float(data['price']), number_of_pages=data['number_of_pages'],
-                        year=data['year'], isbn=data['isbn'],
-                        cover_type=data['cover_type'],
-                        annotation=data['annotation'], slug=data['slug'],
-                        genre_id=data['genre_id'], publisher_id=data['publisher_id'],
-                        author_id=data['author_id'])
-            print(book.title, book.price)
-            try:
-                db.session.add(book)
-                db.session.commit()
-                return {"msg":f"book {book} успешно добавлен"}
-            except:
-                return {"error":"ошибка добавления"}
-        else:
-            return {"error": "The request payload is not in JSON format"}
-    else:
-        books = Book.query.all()
-        results = [
-            {
-                "title": book.title,
-                "price": float(book.price),
-                "number_of_pages": book.number_of_pages,
-                "year": book.year,
-                "isbn": book.isbn,
-                "cover_type": book.cover_type,
-                "annotation": book.annotation,
-                "slug": book.slug,
-                "genre_id": book.genre_id,
-                "publisher_id": book.publisher_id,
-                "author_id": book.author_id
-            } for book in books]
-        return {"coutn": len(results), "users": results}
+@app.route('/user/<int:id>', methods=["DELETE"])
+def delete_user(id):
+    user = User.query.get(id)
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
 
 
+@app.route('/user/<int:id>', methods=["PUT"])
+def update_user(id):
+    user = User.query.get(id)
+    data = request.get_json()
+    user.username = data['username']
+    user.patronymic = data['patronymic']
+    user.name = data['name']
+    user.surname = data['surname']
+    user.password = data['password']
+    user.email = data['email']
+    try:
+        db.session.commit()
+        return {"result": 0}
+    except:
+        return {"result": 1}
+
+
+@app.route('/user/<int:id>', methods=["GET"])
+def get_user(id):
+    user = User.query.get(id)
+    results = {
+        "name": user.name,
+        "surname": user.surname,
+        "patronymic": user.patronymic,
+        "username": user.username,
+        "email": user.email
+    }
+    return {"user": results}
 
 
 if __name__ == "__main__":

@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Список книг
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Список книг</h1>
+    <a href="/create-book">Создать новую книгу</a>
+    <br>
+    {% for book in books %}
+        {{ book.title }}
+        <a href="edit-book/{{ book.id }}">Изменить</a>
+        <br>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Список авторов
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Список авторов</h1>
+    <a href="/create-author">Создать нового автора</a>
+    <br>
+    {% for author in authors %}
+        {{ author.name + author.surname + author.patronymic }}
+        <a href="edit-author/{{ author.id }}">Изменить</a>
+        <br>
+    {% endfor %}
+</div>
+{% endblock %}

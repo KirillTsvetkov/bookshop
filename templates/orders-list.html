@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Список заказов
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Список заказов</h1>
+    <a href="/create-order">Создать новый заказ</a>
+    <br>
+    {% for order in orders %}
+        {{ order.date.strftime('%Y-%m-%d') + " " +  "%.2f р"|format(order.total)  }}
+        <a href="edit-order/{{ order.id }}">Изменить</a>
+        <br>
+    {% endfor %}
+</div>
+{% endblock %}

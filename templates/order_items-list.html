@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Список позиций заказов
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Список позиций заказов</h1>
+    <a href="/create-order_item">Создать новую позицию заказа</a>
+    <br>
+    {% for order_item in order_items %}
+        {{ "Заказ: " + order_item.order_id|string + "| Цена: " +  "%.2f р"|format(order_item.cost)  }}
+        <a href="edit-order_item/{{ order_item.id }}">Изменить</a>
+        <br>
+    {% endfor %}
+</div>
+{% endblock %}

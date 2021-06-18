@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Список издателей
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Список издателей</h1>
+    <a href="/create-publisher">Создать нового издателя</a>
+    <br>
+    {% for publisher in publishers %}
+        {{ publisher.publisher_name }}
+        <a href="edit-publisher/{{ publisher.id }}">Изменить</a>
+        <br>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,10 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Изменить жанра
+{% endblock %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <h1>Изменить жанр</h1>
+    <form id="js-form">
+        <lable for="genre_name">Название жанра</lable>
+        <input type="text" name="genre_name" id="genre_name" class="form-control" value="{{ genre.genre_name }}">
+        <br>
+    </form>
+    <button class="btn btn-success" onclick="update('genre',{{ genre.id }})">Изменить</button>
+    <button class="btn btn-danger" onclick="delete_post('genre',{{ genre.id }})">Удалить</button>
+
+    <br>
+    <br>
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
+
+</div>
+
+{% endblock %}

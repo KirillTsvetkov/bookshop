@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Список польователей
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Список польователей</h1>
+    <a href="/create-user">Создать нового пользователя</a>
+    <br>
+    {% for user in users %}
+        {{ user.username }}
+        <a href="edit-user/{{ user.id }}">Изменить</a>
+        <br>
+    {% endfor %}
+</div>
+{% endblock %}

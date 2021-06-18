@@ -7,7 +7,7 @@
 {% block body %}
 <div class="container mt-5">
     <h1>Создать новую книгу</h1>
-    <form method="post">
+    <form method="post" id="js-form">
         <lable for="title">Название книги</lable>
         <input type="text" name="title" id="title" class="form-control" placeholder="Введите название книги">
         <br>
@@ -58,5 +58,7 @@
         <br>
         <input type="submit" class="btn btn-success" value="Создать">
     </form>
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
 </div>
 {% endblock %}

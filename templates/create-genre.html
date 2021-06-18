@@ -11,7 +11,10 @@
         <lable for="genre_name">Название жанра</lable>
         <input type="text" name="genre_name" id="genre_name" class="form-control" placeholder="Введите название жанра">
         <br>
-        <button type="button" class="btn btn-success"  onclick="create()">Создать</button>
+        <button type="button" class="btn btn-success"  onclick="create('genres')">Создать</button>
+
     </form>
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
 </div>
 {% endblock %}
