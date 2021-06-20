@@ -39,6 +39,7 @@ function create(type){
 function update(type,id){
     var formData = $("#js-form");
     formData=getFormData(formData);
+    console.log(formData);
     url = "/"+type+"/"+id;
     $.ajax({
         type: "PUT",
@@ -54,7 +55,6 @@ function update(type,id){
                 $("#ajax-success").show()
             }
             else{
-                $("#ajax-success").hide()
                 $("#ajax-error").html("Чтото пошло не так");
                 $("#ajax-error").show()
             }

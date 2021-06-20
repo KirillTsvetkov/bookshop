@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Изменить позицию заказ
+{% endblock %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <h1>Изменить позицию заказ</h1>
+    <form id="js-form">
+        <lable for="quantity">Количество</lable>
+        <input type="number" name="quantity" id="quantity" class="form-control" value="{{ order_item.quantity }}">
+        <br>
+        <lable for="book_id">Книга</lable>
+        <select name="book_id" id="book_id" class="form-control" value="{{ order_item.book_id }}">
+             {% for book in books %}
+             <option value="{{ book.id }}">{{book.title}}</option>
+             {% endfor %}
+        </select>
+        <br>
+        <lable for="cost">Цена</lable>
+        <input type="number" name="cost" id="cost" class="form-control" value="{{ order_item.cost }}">
+        <br>
+        <lable for="order_id">Заказ</lable>
+        <select name="order_id" id="order_id" class="form-control" value="{{ order_item.order_id }}">
+             {% for order in orders %}
+             <option value="{{ order.id }}">{{order.total}}</option>
+             {% endfor %}
+        </select>
+        <br>
+    </form>
+    <button class="btn btn-success" onclick="update('order_item',{{ order_item.id }})">Изменить</button>
+    <button class="btn btn-danger" onclick="delete_post('order_item',{{ order_item.id }})">Удалить</button>
+
+    <br>
+    <br>
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
+
+</div>
+
+{% endblock %}

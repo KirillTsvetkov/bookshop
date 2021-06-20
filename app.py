@@ -105,6 +105,53 @@ def authorslist():
     return render_template("authors-list.html", authors=authors)
 
 
+@app.route('/edit-author/<int:id>', methods=["GET"])
+def edit_author(id):
+    author = Author.query.get(id)
+    if author is None:
+        return "Издатель не найден"
+    return render_template("edit-author.html", author=author)
+
+
+@app.route('/edit-publisher/<int:id>', methods=["GET"])
+def edit_publisher(id):
+    publisher = Publisher.query.get(id)
+    if publisher is None:
+        return "Издатель не найден"
+    return render_template("edit-publisher.html", publisher=publisher)
+
+
+@app.route('/edit-book/<int:id>', methods=["GET"])
+def edit_book(id):
+    book = Book.query.get(id)
+    if book is None:
+        return "Книга не найдена"
+    authors = Author.query.all()
+    genres = Genre.query.all()
+    publishers = Publisher.query.all()
+    return render_template("edit-book.html", book=book, authors=authors, genres=genres, publishers=publishers)
+
+
+@app.route('/edit-order/<int:id>', methods=["GET"])
+def edit_order(id):
+    order = Order.query.get(id)
+    if order is None:
+        return "Заказ не найден"
+    users = User.query.all()
+
+    return render_template("edit-order.html", order=order, users=users)
+
+
+@app.route('/edit-order_item/<int:id>', methods=["GET"])
+def edit_order_item(id):
+    order_item = OrderItem.query.get(id)
+    if order_item is None:
+        return "Позиция заказа не найдена"
+    books = Book.query.all()
+    orders = Order.query.all()
+    return render_template("edit-order_item.html", order_item=order_item, books=books, orders=orders)
+
+
 @app.route('/books-list', methods=["GET"])
 def bookslist():
     books = Book.query.all()
@@ -138,6 +185,11 @@ def edit_genre(id):
 @app.route('/create-genre', methods=["GET"])
 def create_genre():
     return render_template("create-genre.html")
+
+
+@app.route('/create-author', methods=["GET"])
+def create_author():
+    return render_template("create-author.html")
 
 
 @app.route('/create-publisher', methods=["GET"])
@@ -262,30 +314,31 @@ def update_book(id):
     book.price=data['price']
     book.number_of_pages=data['number_of_pages']
     book.year=data['year']
-    book=data['isbn']
-    book.cover_type=data['cover_type']
+    book.isbn=data['isbn']
+    book.cover_type=bool(data['cover_type'])
     book.annotation=data['annotation']
     book.slug=data['slug']
-    book.genre_id=data['genre_id']
-    book.publisher_id=data['publisher_id']
-    book.author_id=data['author_id']
-    db.session.commit()
-    results = {
-            "title": book.title,
-            "price": book.price,
-            "number_of_pages": book.number_of_pages,
-            "year": book.year,
-            "isbn": book.isbn,
-            "cover_type": book.cover_type,
-            "annotation": book.annotation,
-            "slug": book.slug,
-            "genre_id": book.genre_id,
-            "publisher_id": book.publisher_id,
-            "author_id": book.author_id
-    }
-
-    return {"book": results}
-
+    book.genre_id=int(data['genre_id'])
+    book.publisher_id=int(data['publisher_id'])
+    book.author_id=int(data['author_id'])
+    try:
+        db.session.commit()
+        results = {
+                "title": book.title,
+                "price": book.price,
+                "number_of_pages": book.number_of_pages,
+                "year": book.year,
+                "isbn": book.isbn,
+                "cover_type": book.cover_type,
+                "annotation": book.annotation,
+                "slug": book.slug,
+                "genre_id": book.genre_id,
+                "publisher_id": book.publisher_id,
+                "author_id": book.author_id
+        }
+        return {"result":0, "book": results}
+    except:
+        return {"result":1}
 
 @app.route('/book/<int:id>', methods=["DELETE"])
 def delete_book(id):
@@ -359,14 +412,33 @@ def update_order_item(id):
     order_item = OrderItem.query.get(id)
     data = request.get_json()
     order_item.book_id = data['book_id']
-    order_item.cost = data['cost']
+    order_item.cost = float(data['cost'])
     order_item.order_id = data['order_id']
     order_item.quantity = data['quantity']
+    order = order_item.order
     try:
+        db.session.commit()
+        order_itemslist = OrderItem.query.filter(order == order).all()
+        sum = 0
+        for item in order_itemslist:
+            sum += item.cost
+        order.total=sum
         db.session.commit()
         return {"result": 0}
     except:
         return {"result": 1}
+
+
+@app.route('/test', methods=["GET"])
+def test():
+    order = Order.query.get(3)
+    sum = 0
+    order_itemslist = OrderItem.query.filter(order == order).all()
+    for item in order_itemslist:
+        sum += item.cost
+    order.total = sum
+    print(sum)
+    return "0"
 
 
 @app.route('/orders', methods=["GET", "POST"])

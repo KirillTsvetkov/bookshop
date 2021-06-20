@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Изменить книгу
+{% endblock %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <h1>Изменить книгу</h1>
+    <form id="js-form">
+        <lable for="title">Название книги</lable>
+        <input type="text" name="title" id="title" class="form-control" value="{{ book.title }}">
+        <br>
+        <lable for="price">Цена</lable>
+        <input type="number" name="price" id="price" class="form-control" value="{{ book.price }}">
+        <br>
+        <lable for="author_id">Автор</lable>
+        <select name="author_id" id="author_id" value="book.author_id">
+            {% for author in authors %}
+            <option value="{{ author.id }}">{{ author.surname + " " + author.name + " " + author.patronymic}}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <lable for="genre_id">Жанр</lable>
+        <select name="genre_id" id="genre_id" value="{{ book.genre_id }}">
+            {% for genre in genres %}
+            <option value="{{ genre.id }}">{{ genre.genre_name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <lable for="publisher_id">Издатель</lable>
+        <select name="publisher_id" id="publisher_id" value="{{ book.publisher_id }}">
+            {% for publisher in publishers %}
+            <option value="{{ publisher.id }}">{{ publisher.publisher_name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <lable for="number_of_pages">Введите кол-во страниц</lable>
+        <input type="number" name="number_of_pages" id="number_of_pages" class="form-control" value="{{ book.number_of_pages }}">
+        <br>
+        <lable for="isbn">isbn</lable>
+        <input type="text" name="isbn" id="isbn" class="form-control" value="{{ book.isbn }}">
+        <br>
+        <lable for="annotation">Аннотация</lable>
+        <textarea name="annotation" id="annotation" cols="30" rows="10" class="form-control">{{ book.annotation }}</textarea>
+        <br>
+        <lable for="slug">Slug</lable>
+        <input type="text" name="slug" id="slug" class="form-control" value="{{ book.slug }}">
+        <br>
+        <lable for="year">Год</lable>
+        <input type="number" name="year" id="year" class="form-control" value="{{ book.year }}">
+        <br>
+        <lable for="cover_type">Выберите тип обложки</lable>
+        <select name="cover_type" id="cover_type" class="form-control" value="{{ book.cover_type }}">
+            <option value="1">Твердая</option>
+            <option value="">Мягкая</option>
+        </select>
+        <br>
+    </form>
+    <button class="btn btn-success" onclick="update('book',{{ book.id }})">Изменить</button>
+    <button class="btn btn-danger" onclick="delete_post('book',{{ book.id }})">Удалить</button>
+
+    <br>
+    <br>
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
+
+</div>
+
+{% endblock %}

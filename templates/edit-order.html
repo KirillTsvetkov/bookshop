@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Изменить заказ
+{% endblock %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <h1>Изменить заказ</h1>
+    <form id="js-form">
+        <lable for="date">Дата заказа</lable>
+        <input type="date" name="date" id="date" class="form-control" value="{{ order.date.strftime('%Y-%m-%d') }}">
+        <br>
+        <lable for="user_id">Пользователь</lable>
+        <select name="user_id" id="user_id" class="form-control" value="{{ order.user_id }}">
+             {% for user in users %}
+             <option value="{{ user.id }}">{{ user.username }}</option>
+             {% endfor %}
+        </select>
+        <br>
+        <lable for="total">Цена</lable>
+        <input type="number" name="total" id="total" class="form-control" value="{{ order.total }}">
+        <br>
+    </form>
+    <button class="btn btn-success" onclick="update('order',{{ order.id }})">Изменить</button>
+    <button class="btn btn-danger" onclick="delete_post('order',{{ order.id }})">Удалить</button>
+
+    <br>
+    <br>
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
+
+</div>
+
+{% endblock %}

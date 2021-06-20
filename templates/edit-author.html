@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Изменить автора
+{% endblock %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <h1>Изменить автора</h1>
+    <form id="js-form">
+        <lable for="name">Имя</lable>
+        <input type="text" name="name" id="name" class="form-control" value="{{ author.name }}">
+        <br>
+        <lable for="surname">Фамилия</lable>
+        <input type="text" name="surname" id="surname" class="form-control" value="{{ author.surname }}">
+        <br>
+        <lable for="patronymic">Отчество</lable>
+        <input type="text" name="patronymic" id="patronymic" class="form-control" value="{{ author.patronymic }}">
+        <br>
+    </form>
+    <button class="btn btn-success" onclick="update('author',{{ author.id }})">Изменить</button>
+    <button class="btn btn-danger" onclick="delete_post('author',{{ author.id }})">Удалить</button>
+
+    <br>
+    <br>
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
+
+</div>
+
+{% endblock %}

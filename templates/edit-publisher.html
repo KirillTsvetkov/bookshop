@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Изменить издателя
+{% endblock %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <h1>Изменить издателя</h1>
+    <form id="js-form">
+        <lable for="publisher_name">Название издателя</lable>
+        <input type="text" name="publisher_name" id="publisher_name" class="form-control" value="{{ publisher.publisher_name }}">
+        <br>
+    </form>
+    <button class="btn btn-success" onclick="update('publisher',{{ publisher.id }})">Изменить</button>
+    <button class="btn btn-danger" onclick="delete_post('publisher',{{ publisher.id }})">Удалить</button>
+
+    <br>
+    <br>
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
+
+</div>
+
+{% endblock %}
