@@ -5,14 +5,40 @@
 {% endblock %}
 
 {% block body %}
+{% include 'crud-header.html' %}
 <div class="container mt-5">
     <h1>Список позиций заказов</h1>
     <a href="/create-order_item">Создать новую позицию заказа</a>
     <br>
-    {% for order_item in order_items %}
-        {{ "Заказ: " + order_item.order_id|string + "| Цена: " +  "%.2f р"|format(order_item.cost)  }}
-        <a href="edit-order_item/{{ order_item.id }}">Изменить</a>
-        <br>
-    {% endfor %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Пользователь</th>
+            <th scope="col">Дата заказа</th>
+            <th scope="col">Книга</th>
+            <th scope="col">Кол-во</th>
+            <th scope="col">Цена</th>
+            <th scope="col">Изменить</th>
+            <th scope="col">Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order_item in order_items %}
+        <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ order_item.username }}</td>
+            <td>{{ order_item.date.strftime('%Y-%m-%d') }}</td>
+            <td>{{ order_item.title }}</td>
+            <td>{{ order_item.quantity }}</td>
+            <td>{{ "Цена: " + "%.2f р"|format(order_item.cost) }}</td>
+            <td><a href="edit-order_item/{{ order_item.id }}">Изменить</a></td>
+            <td>
+                <button class="btn btn-danger" onclick="delete_post('order_item',{{ order_item.id }})">Удалить</button>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

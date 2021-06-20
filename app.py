@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
 from flask_login import LoginManager, UserMixin
+from sqlalchemy import asc, desc
 import jsonify
 
 app = Flask(__name__)
@@ -113,6 +114,15 @@ def edit_author(id):
     return render_template("edit-author.html", author=author)
 
 
+@app.route('/edit-user/<int:id>', methods=["GET"])
+def edit_user(id):
+    user = User.query.get(id)
+    print(user.username)
+    if user is None:
+        return "Пользователь не найден"
+    return render_template("edit-user.html", user=user)
+
+
 @app.route('/edit-publisher/<int:id>', methods=["GET"])
 def edit_publisher(id):
     publisher = Publisher.query.get(id)
@@ -154,19 +164,20 @@ def edit_order_item(id):
 
 @app.route('/books-list', methods=["GET"])
 def bookslist():
-    books = Book.query.all()
+    books = db.session.query(Book.title, Book.id, Book.price, Author.name, Author.surname, Genre.genre_name, Publisher.publisher_name).join(Author).join(Genre).join(Publisher).all()
     return render_template("books-list.html", books=books)
 
 
 @app.route('/orders-list', methods=["GET"])
 def orderslist():
-    orders = Order.query.all()
+    orders = db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
     return render_template("orders-list.html", orders=orders)
 
 
 @app.route('/order_items-list', methods=["GET"])
 def order_itemslist():
-    order_items = OrderItem.query.all()
+    order_items = db.session.query(OrderItem.id, OrderItem.quantity, OrderItem.cost, Order.date, User.username, Book.title).select_from(OrderItem).\
+                    join(OrderItem.order).join(Book).join(User)
     return render_template("order_items-list.html", order_items=order_items)
 
 
@@ -431,13 +442,8 @@ def update_order_item(id):
 
 @app.route('/test', methods=["GET"])
 def test():
-    order = Order.query.get(3)
-    sum = 0
-    order_itemslist = OrderItem.query.filter(order == order).all()
-    for item in order_itemslist:
-        sum += item.cost
-    order.total = sum
-    print(sum)
+    bookInfo = db.session.query(Book.title, Book.price, Author.name, Author.surname).join(Author).join(Genre).join(Publisher).all()
+
     return "0"
 
 

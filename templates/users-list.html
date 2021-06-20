@@ -5,14 +5,34 @@
 {% endblock %}
 
 {% block body %}
+{% include 'crud-header.html' %}
 <div class="container mt-5">
     <h1>Список польователей</h1>
     <a href="/create-user">Создать нового пользователя</a>
     <br>
-    {% for user in users %}
-        {{ user.username }}
-        <a href="edit-user/{{ user.id }}">Изменить</a>
-        <br>
-    {% endfor %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Username</th>
+            <th scope="col">Имя</th>
+            <th scope="col">Фамилия</th>
+            <th scope="col">Изменить</th>
+            <th scope="col">Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ user.username }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.username }}</td>
+                <td><a href="edit-user/{{ user.id }}">Изменить</a></td>
+                <td><button class="btn btn-danger" onclick="delete_post('user',{{ user.id }})">Удалить</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

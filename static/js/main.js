@@ -72,6 +72,7 @@ function delete_post(type,id){
         data:JSON.stringify(1),
         success: function(response){
             result = response.result
+            console.log(response)
             if (result==0){
                 $("#ajax-error").hide()
                 $("#ajax-success").html("Изменения внесены успешно");
@@ -85,3 +86,4 @@ function delete_post(type,id){
         }
     });
 }
+

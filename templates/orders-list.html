@@ -5,14 +5,38 @@
 {% endblock %}
 
 {% block body %}
+{% include 'crud-header.html' %}
 <div class="container mt-5">
     <h1>Список заказов</h1>
     <a href="/create-order">Создать новый заказ</a>
     <br>
-    {% for order in orders %}
-        {{ order.date.strftime('%Y-%m-%d') + " " +  "%.2f р"|format(order.total)  }}
-        <a href="edit-order/{{ order.id }}">Изменить</a>
-        <br>
-    {% endfor %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Пользователь</th>
+            <th scope="col">Дата</th>
+            <th scope="col">Цена</th>
+            <th scope="col">Изменить</th>
+            <th scope="col">Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order in orders %}
+        <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ order.username }}</td>
+            <td>{{ order.date.strftime('%Y-%m-%d') }}</td>
+            <td>{{"%.2f р"|format(order.total) }}</td>
+            <td><a href="edit-order/{{ order.id }}">Изменить</a></td>
+            <td>
+                <button class="btn btn-danger" onclick="delete_post('order',{{ order.id }})">Удалить</button>
+            </td>
+            <br>
+        </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

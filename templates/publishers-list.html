@@ -3,16 +3,34 @@
 {% block title %}
 Список издателей
 {% endblock %}
-
 {% block body %}
+{% include 'crud-header.html' %}
 <div class="container mt-5">
     <h1>Список издателей</h1>
     <a href="/create-publisher">Создать нового издателя</a>
     <br>
-    {% for publisher in publishers %}
-        {{ publisher.publisher_name }}
-        <a href="edit-publisher/{{ publisher.id }}">Изменить</a>
-        <br>
-    {% endfor %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Название издателя</th>
+            <th scope="col">Изменить</th>
+            <th scope="col">Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for publisher in publishers %}
+        <tr>
+
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ publisher.publisher_name }}</td>
+            <td><a href="edit-publisher/{{ publisher.id }}">Изменить</a></td>
+            <td><button class="btn btn-danger" onclick="delete_post('publisher',{{ publisher.id }})">Удалить</button></td>
+            <br>
+        </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

@@ -5,14 +5,42 @@
 {% endblock %}
 
 {% block body %}
+{% include 'crud-header.html' %}
 <div class="container mt-5">
     <h1>Список книг</h1>
     <a href="/create-book">Создать новую книгу</a>
     <br>
-    {% for book in books %}
-        {{ book.title }}
-        <a href="edit-book/{{ book.id }}">Изменить</a>
-        <br>
-    {% endfor %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Название</th>
+            <th scope="col">Автор</th>
+            <th scope="col">Жанр</th>
+            <th scope="col">Издатель</th>
+            <th scope="col">Цена</th>
+            <th scope="col">Изменить</th>
+            <th scope="col">Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in books %}
+        <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ book.title }}</td>
+            <td>{{ book.name + " " + book.surname }}</td>
+            <td>{{ book.genre_name }}</td>
+            <td>{{ book.publisher_name }}</td>
+            <td>{{ book.price }}</td>
+            <td><a href="edit-book/{{ book.id }}">Изменить</a></td>
+            <td>
+                <button class="btn btn-danger" onclick="delete_post('book',{{ book.id }})">Удалить</button>
+            </td>
+            <br>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 </div>
 {% endblock %}

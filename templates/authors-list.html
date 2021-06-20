@@ -12,6 +12,7 @@
     {% for author in authors %}
         {{ author.name + author.surname + author.patronymic }}
         <a href="edit-author/{{ author.id }}">Изменить</a>
+        <button class="btn btn-danger" onclick="delete_post('author',{{ author.id }})">Удалить</button>
         <br>
     {% endfor %}
 </div>
