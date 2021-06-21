@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Главная
+{% endblock %}
+{% block body %}
+
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col-9">
+            <form class="form-inline" method="GET" action="/search">
+                <input class="form-control col-8" type="text" name="search" id="search" placeholder="Найти..."
+                       aria-label="Search">
+                <button type="submit" class="btn btn-">Поиск</button>
+            </form>
+        </div>
+        <div class="col-1">
+            {{ current_user.username }}
+        </div>
+        <div class="col-1">
+            Корзина
+        </div>
+        <div class="col-1">
+            <a href="/logout">Выход</a>
+        </div>
+    </div>
+    <div class="row">
+        {% for book in books %}
+        <div class="card text-center" style="width: 15rem; margin-right:10px">
+            <img class="card-img-top" src="..." alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+
+                <p class="card-text text-center">{{ book.surname + " " + book.name}}</p>
+                <button class="btn btn-success">Купить</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

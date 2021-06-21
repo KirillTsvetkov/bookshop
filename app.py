@@ -1,16 +1,20 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
-from flask_login import LoginManager, UserMixin
-from sqlalchemy import asc, desc
+from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
+from sqlalchemy import asc, desc, or_, and_
 import jsonify
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123@localhost/bookshop'
+app.config['SECRET_KEY'] = 'secret'
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 class User(db.Model, UserMixin):
@@ -86,6 +90,11 @@ class Book(db.Model):
 
     def __repr__(self):
         return '<Book %r>' % self.title
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 @app.route('/genres-list', methods=["GET"])
@@ -718,6 +727,58 @@ def get_user(id):
         "email": user.email
     }
     return {"user": results}
+
+
+@app.route('/', methods=["GET"])
+def home():
+    books = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author).all()
+    return render_template("home.html", books=books)
+
+
+@app.route('/search', methods=["GET"])
+def search():
+    search = request.args.get('search')
+    books = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author).\
+        filter(or_(Book.title.like(search), Author.name.like(search), Author.surname.like(search),\
+                   Author.patronymic.like(search))).all()
+    return render_template("home.html", books=books)
+
+
+@app.route('/auth', methods=['POST', 'GET'])
+def auth():
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user.password == password:
+            login_user(user)
+            return redirect('/')
+        else:
+            return "Неверный пароль"
+    else:
+        return render_template("auth.html")
+
+
+@app.route('/add_in_bag', methods=['POST'])
+def add_in_book():
+    book_id = request.form['book_id']
+    if 'books' not in session:
+        session['books'] = []
+    books_list = session['books']
+    if book_id not in books_list:
+        books_list.append(book_id)
+    session['books'] = books_list
+    print(session['books'])
+    return 'dsda'
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    session.clear()
+    logout_user()
+    return "вы вышли"
+
 
 
 if __name__ == "__main__":

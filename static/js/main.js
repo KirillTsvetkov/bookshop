@@ -65,7 +65,9 @@ function update(type,id){
     });
 }
 
-function delete_post(type,id){
+function delete_post(type,id,e){
+    row = $(event.target).closest('tr');
+    console.log(row);
     url = "/"+type+"/"+id;
     $.ajax({
         type: "DELETE",
@@ -77,6 +79,7 @@ function delete_post(type,id){
             result = response.result
             console.log(response)
             if (result==0){
+                $(row).remove()
                 $("#ajax-error").hide()
                 $("#ajax-success").html("Изменения внесены успешно");
                 $("#ajax-success").show()
