@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Создать позицию заказ
+{% endblock %}
+
+{% block body %}
+{% include 'crud-header.html' %}
+<div class="container mt-5">
+    <h1>Создать позицию заказ</h1>
+    <form id="js-form">
+        <lable for="quantity">Количество</lable>
+        <input type="number" name="quantity" id="quantity" class="form-control">
+        <br>
+        <lable for="book_id">Книга</lable>
+        <select name="book_id" id="book_id" class="form-control">
+            {% for book in books %}
+            <option value="{{ book.id }}">{{book.title}}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <lable for="cost">Цена</lable>
+        <input type="number" name="cost" id="cost" class="form-control">
+        <br>
+        <lable for="order_id">Заказ</lable>
+        <select name="order_id" id="order_id" class="form-control">
+            {% for order in orders %}
+            <option value="{{ order.id }}">{{ "User: " + order.username + " |Цена заказа: " + order.total|string + " |Дата:" + order.date.strftime('%Y-%m-%d')}}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <button type="button" class="btn btn-success" onclick="create('order_items')">Создать</button>
+
+    </form>
+
+    <br>
+    <br>
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
+
+</div>
+
+{% endblock %}

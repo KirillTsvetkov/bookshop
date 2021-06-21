@@ -198,6 +198,19 @@ def create_genre():
     return render_template("create-genre.html")
 
 
+@app.route('/create-user', methods=["GET"])
+def create_user():
+    return render_template("create-user.html")
+
+
+@app.route('/create-book', methods=["GET"])
+def create_book():
+    genres = Genre.query.all()
+    authors = Author.query.all()
+    publishers = Publisher.query.all()
+    return render_template("create-book.html", genres=genres, authors=authors, publishers=publishers)
+
+
 @app.route('/create-author', methods=["GET"])
 def create_author():
     return render_template("create-author.html")
@@ -206,6 +219,20 @@ def create_author():
 @app.route('/create-publisher', methods=["GET"])
 def create_publisher():
     return render_template("create-publisher.html")
+
+
+@app.route('/create-order', methods=["GET"])
+def create_order():
+    users = db.session.query(User.id, User.username)
+    return render_template("create-order.html", users=users)
+
+
+
+@app.route('/create-order_item', methods=["GET"])
+def create_order_item():
+    orders = db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
+    books = db.session.query(Book.id, Book.title).all()
+    return render_template("create-order_item.html", orders=orders, books=books)
 
 
 @app.route('/genres', methods=["GET", "POST"])
@@ -272,13 +299,12 @@ def handle_books():
         if request.is_json:
             data = request.get_json()
             book = Book(title = data['title'],
-                        price=float(data['price']), number_of_pages=data['number_of_pages'],
-                        year=data['year'], isbn=data['isbn'],
-                        cover_type=data['cover_type'],
+                        price=float(data['price']), number_of_pages=int(data['number_of_pages']),
+                        year=int(data['year']), isbn=data['isbn'],
+                        cover_type=bool(data['cover_type']),
                         annotation=data['annotation'], slug=data['slug'],
-                        genre_id=data['genre_id'], publisher_id=data['publisher_id'],
-                        author_id=data['author_id'])
-            print(book.title, book.price)
+                        genre_id=int(data['genre_id']), publisher_id=int(data['publisher_id']),
+                        author_id=int(data['author_id']))
             try:
                 db.session.add(book)
                 db.session.commit()
@@ -369,8 +395,8 @@ def handle_order_items():
             data = request.get_json()
             count=0
             for item in data:
-                order_item = OrderItem(order_id=item['order_id'], quantity=item['quantity'],
-                              cost=item['cost'], book_id=item['book_id'])
+                order_item = OrderItem(order_id=int(item['order_id']), quantity=int(item['quantity']),
+                              cost=float(item['cost']), book_id=int(item['book_id']))
                 try:
                     db.session.add(order_item)
                     db.session.commit()

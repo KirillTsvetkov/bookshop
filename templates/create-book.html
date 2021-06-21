@@ -5,28 +5,30 @@
 {% endblock %}
 
 {% block body %}
+{% include 'crud-header.html' %}
+
 <div class="container mt-5">
     <h1>Создать новую книгу</h1>
     <form method="post" id="js-form">
         <lable for="title">Название книги</lable>
         <input type="text" name="title" id="title" class="form-control" placeholder="Введите название книги">
         <br>
-        <lable for="genre">Выберите жанр</lable>
-        <select name="genre" id="genre" class="form-control">
+        <lable for="genre_id">Выберите жанр</lable>
+        <select name="genre_id" id="genre_id" class="form-control">
             {% for genre in genres %}
                 <option value="{{genre.id}}">{{ genre.genre_name }}</option>
             {% endfor %}
         </select>
         <br>
-        <lable for="author">Выберите автора</lable>
-        <select name="author" id="author" class="form-control">
+        <lable for="author_id">Выберите автора</lable>
+        <select name="author_id" id="author_id" class="form-control">
             {% for author in authors %}
                 <option value="{{author.id}}">{{ author.name + " "+ author.surname}}</option>
             {% endfor %}
         </select>
         <br>
-        <lable for="publisher">Выберите издателя</lable>
-        <select name="publisher" id="publisher" class="form-control">
+        <lable for="publisher_id">Выберите издателя</lable>
+        <select name="publisher_id" id="publisher_id" class="form-control">
             {% for publisher in publishers %}
                 <option value="{{publisher.id}}">{{ publisher.publisher_name }}</option>
             {% endfor %}

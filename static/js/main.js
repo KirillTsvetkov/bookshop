@@ -13,7 +13,10 @@ function create(type){
     var formData = $("#js-form");
     url = "/"+type;
     formData=getFormData(formData);
-    console.log(formData);
+    if(url == "/order_items"){
+        formData = [formData]
+    }
+    console.log(formData, url);
     $.ajax({
         type: "POST",
         url: type,

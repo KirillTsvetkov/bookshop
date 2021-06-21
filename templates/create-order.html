@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Создать заказ
+{% endblock %}
+
+{% block body %}
+{% include 'crud-header.html' %}
+<div class="container mt-5">
+    <h1>Создать заказ</h1>
+    <form id="js-form">
+        <lable for="date">Дата заказа</lable>
+        <input type="date" name="date" id="date" class="form-control">
+        <br>
+        <lable for="user_id">Пользователь</lable>
+        <select name="user_id" id="user_id" class="form-control">
+            {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <lable for="total">Цена</lable>
+        <input type="number" name="total" id="total" class="form-control">
+        <br>
+        <button type="button" class="btn btn-success" onclick="create('orders')">Создать</button>
+
+    </form>
+    <br>
+    <br>
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
+
+</div>
+
+{% endblock %}
