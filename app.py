@@ -167,7 +167,7 @@ def edit_order_item(id):
     if order_item is None:
         return "Позиция заказа не найдена"
     books = Book.query.all()
-    orders = Order.query.all()
+    orders = db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
     return render_template("edit-order_item.html", order_item=order_item, books=books, orders=orders)
 
 

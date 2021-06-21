@@ -25,7 +25,7 @@
         <lable for="order_id">Заказ</lable>
         <select name="order_id" id="order_id" class="form-control" value="{{ order_item.order_id }}">
              {% for order in orders %}
-             <option value="{{ order.id }}">{{order.total}}</option>
+             <option value="{{ order.id }}">{{"Полтзователь: " + order.username + " | Дата: " + order.date.strftime('%Y-%m-%d') +" | Цена: " + order.total|string}}</option>
              {% endfor %}
         </select>
         <br>
