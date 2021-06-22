@@ -93,3 +93,40 @@ function delete_post(type,id,e){
     });
 }
 
+function addbook(id){
+     $.ajax({
+            url:"/add_in_bag",
+            method:"POST",
+            data:{book_id:id},
+            success:function(response){
+                console.log(response)
+            }
+     });
+}
+
+
+function createOrder(){
+    order_items_list=[];
+    $( "li" ).each(function( index ) {
+        quantity = $(this).find('input').val();
+        book_id = $( this ).attr("id");
+        order_items_list.push(
+            {"book_id":book_id,
+             "quantity":quantity
+            }
+        )
+    });
+    console.log(order_items_list)
+}
+
+
+function total(id,e){
+    book = $('#'+id);
+    price = $(book).find(".price").text()
+    quantity = $(book).find("input").val()
+    console.log(quantity*price);
+    cost = quantity*price;
+    if(cost >= 0){
+        $(book).find('.cost').text("Цена позиции: " + cost + " р.");
+    }
+}

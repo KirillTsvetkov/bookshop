@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Корзина
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="col-4">
+        <ul class="list-group list-group-flush">
+            {% for book in books_in_bag %}
+            <li class="list-group-item text-center" id="{{ book.id }}">
+                <div class="card text-center" style="width: 15rem; margin-right:10px">
+                    <img class="card-img-top" src="..." alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book.title }}</h5>
+                        <h6 class="card-title price">{{ book.price }}</h6>
+                        <p class="card-text text-center">{{ book.surname + " " + book.name}}</p>
+                        <input type="number" class="form-control" class="qnt" onchange="total({{ book.id }})" value="1" min="1">
+                        <h6 class="card-title cost">Цена позиции: {{ book.price }}</h6>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+
+        </ul>
+    </div>
+    <br>
+    <div id="total">Общая цена заказа: р.</div>
+
+    <button class="btn btn-success" onclick="createOrder()">Заказать</button>
+
+</div>
+</div>
+{% endblock %}

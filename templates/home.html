@@ -17,12 +17,17 @@
         <div class="col-1">
             {{ current_user.username }}
         </div>
+        {% if current_user.is_authenticated %}
         <div class="col-1">
-            Корзина
-        </div>
+            <a href="/bag">Корзина</a></div>
         <div class="col-1">
             <a href="/logout">Выход</a>
         </div>
+        {% else %}
+        <div class="col-1">
+            <a href="/auth">Войти</a>
+        </div>
+        {% endif %}
     </div>
     <div class="row">
         {% for book in books %}
@@ -32,7 +37,7 @@
                 <h5 class="card-title">{{ book.title }}</h5>
 
                 <p class="card-text text-center">{{ book.surname + " " + book.name}}</p>
-                <button class="btn btn-success">Купить</button>
+                <button class="btn btn-success" onclick="addbook({{ book.id }})">Купить</button>
             </div>
         </div>
         {% endfor %}

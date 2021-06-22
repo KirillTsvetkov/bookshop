@@ -17,6 +17,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(40), nullable=False, unique=True)
@@ -769,7 +771,18 @@ def add_in_book():
         books_list.append(book_id)
     session['books'] = books_list
     print(session['books'])
-    return 'dsda'
+    return {"result": 0}
+
+
+@app.route('/bag', methods=['GET'])
+def bag():
+    books_in_bag=[]
+    for book in session['books']:
+        book_in_bag = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author).\
+            filter(Book.id == book).first()
+        books_in_bag.append(book_in_bag)
+        print(session['books'])
+    return render_template("bag.html", books_in_bag=books_in_bag)
 
 
 @app.route('/logout')
