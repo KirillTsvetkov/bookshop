@@ -110,23 +110,73 @@ function createOrder(){
     $( "li" ).each(function( index ) {
         quantity = $(this).find('input').val();
         book_id = $( this ).attr("id");
+        cost = Number($(this).find('.item-cost').text())
         order_items_list.push(
             {"book_id":book_id,
-             "quantity":quantity
+             "quantity":quantity,
+             "cost":cost
             }
         )
     });
-    console.log(order_items_list)
+    total =  Number($('#js-total').text())
+    order = {"total":total}
+
+    $.ajax({
+        type: "POST",
+        url: "/order_from_bag",
+        contentType : "application/json",
+        dataType: "json",
+        data:JSON.stringify({"order_items_list": order_items_list,
+                            "order":order
+        }),
+        success: function(response){
+            result = response.result
+            if(result == 0){
+                    $( "li" ).each(function( index ) {
+                        $(this).remove()
+                    })
+                    $("#create-order").remove()
+                    $("#block-total").remove()
+                    $("#ajax-error").hide()
+                    $("#ajax-success").html("Заказ создан успешно");
+                    $("#ajax-success").show()
+
+            }
+            else{
+                $("#ajax-success").hide()
+                $("#ajax-error").html("Чтото пошло не так");
+                $("#ajax-error").show()
+            }
+        }
+    });
+    console.log(order_items_list, order)
 }
 
 
-function total(id,e){
+function costcalc(id){
     book = $('#'+id);
     price = $(book).find(".price").text()
     quantity = $(book).find("input").val()
     console.log(quantity*price);
     cost = quantity*price;
     if(cost >= 0){
-        $(book).find('.cost').text("Цена позиции: " + cost + " р.");
+        $(book).find('.item-cost').text(cost);
+        total = 0;
+        $('.item-cost').each(function(){
+            total += Number($(this).text())
+        })
+        $('#js-total').text(total)
     }
+
 }
+
+
+$(document).ready(function(){
+    total=0
+    $('.item-cost').each(function(){
+        total += Number($(this).text())
+    })
+    $('#js-total').text(total)
+})
+
+

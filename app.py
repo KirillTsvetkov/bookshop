@@ -777,13 +777,36 @@ def add_in_book():
 @app.route('/bag', methods=['GET'])
 def bag():
     books_in_bag=[]
-    for book in session['books']:
-        book_in_bag = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author).\
-            filter(Book.id == book).first()
-        books_in_bag.append(book_in_bag)
-        print(session['books'])
+    if 'books' in session:
+        for book in session['books']:
+            book_in_bag = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author).\
+                filter(Book.id == book).first()
+            books_in_bag.append(book_in_bag)
+            print(session['books'])
     return render_template("bag.html", books_in_bag=books_in_bag)
 
+
+@app.route('/order_from_bag', methods=['POST'])
+def order_from_bag():
+    data = request.get_json()
+    user_id = current_user.id
+    total = data['order']['total']
+    order = Order(user_id=user_id, date=datetime.utcnow(), total=total)
+    try:
+        db.session.add(order)
+        db.session.commit()
+    except:
+        return {"result":1}
+    order_items_list = data['order_items_list']
+    for item in order_items_list:
+        order_item = OrderItem(book_id=int(item['book_id']), quantity=int(item['quantity']), order=order, cost=float(item['cost']))
+        try:
+            db.session.add(order_item)
+            db.session.commit()
+        except:
+            return {"result": 1}
+    session['books']=[]
+    return {"result":0}
 
 @app.route('/logout')
 @login_required

@@ -7,6 +7,7 @@
 {% block body %}
 <div class="container mt-5">
     <div class="col-4">
+        {% if books_in_bag %}
         <ul class="list-group list-group-flush">
             {% for book in books_in_bag %}
             <li class="list-group-item text-center" id="{{ book.id }}">
@@ -16,19 +17,24 @@
                         <h5 class="card-title">{{ book.title }}</h5>
                         <h6 class="card-title price">{{ book.price }}</h6>
                         <p class="card-text text-center">{{ book.surname + " " + book.name}}</p>
-                        <input type="number" class="form-control" class="qnt" onchange="total({{ book.id }})" value="1" min="1">
-                        <h6 class="card-title cost">Цена позиции: {{ book.price }}</h6>
+                        <input type="number" class="form-control" class="qnt" oninput="costcalc({{ book.id }});" value="1"
+                               min="1">
+                        <h6 class="card-title">Цена позиции: <span class="item-cost">{{ book.price }}</span></h6>
                     </div>
                 </div>
             </li>
             {% endfor %}
-
         </ul>
     </div>
     <br>
-    <div id="total">Общая цена заказа: р.</div>
+    <div id="block-total">Общая цена заказа:<span id="js-total"></span> р.</div>
 
-    <button class="btn btn-success" onclick="createOrder()">Заказать</button>
+    <button class="btn btn-success" onclick="createOrder()" id="create-order">Заказать</button>
+    {% else %}
+    <h5>Корзина пуста</h5>
+    {% endif %}
+    <div class="p-3 mb-2 bg-danger text-white ajax-res" id="ajax-error"></div>
+    <div class="p-3 mb-2 bg-success text-white ajax-res" id="ajax-success"></div>
 
 </div>
 </div>
