@@ -734,7 +734,7 @@ def get_user(id):
 @app.route('/', methods=["GET"])
 def home():
     books = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author).all()
-    return render_template("home.html", books=books)
+    return render_template("shop/home.html", books=books)
 
 
 @app.route('/search', methods=["GET"])
@@ -743,7 +743,7 @@ def search():
     books = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author).\
         filter(or_(Book.title.like(search), Author.name.like(search), Author.surname.like(search),\
                    Author.patronymic.like(search))).all()
-    return render_template("home.html", books=books)
+    return render_template("shop/home.html", books=books)
 
 
 @app.route('/auth', methods=['POST', 'GET'])
@@ -758,7 +758,7 @@ def auth():
         else:
             return "Неверный пароль"
     else:
-        return render_template("auth.html")
+        return render_template("shop/auth.html")
 
 
 @app.route('/add_in_bag', methods=['POST'])
@@ -783,7 +783,7 @@ def bag():
                 filter(Book.id == book).first()
             books_in_bag.append(book_in_bag)
             print(session['books'])
-    return render_template("bag.html", books_in_bag=books_in_bag)
+    return render_template("shop/bag.html", books_in_bag=books_in_bag)
 
 
 @app.route('/order_from_bag', methods=['POST'])
@@ -815,6 +815,30 @@ def logout():
     logout_user()
     return "вы вышли"
 
+
+@app.route('/old-orders', methods=['GET'])
+def old_orders():
+    user_id = current_user.id
+    orders = Order.query.filter(Order.user_id == user_id).all()
+    print(orders)
+    return render_template("shop/old-orders.html", orders=orders)
+
+
+@app.route('/order-page/<int:id>', methods=['GET'])
+def order_page(id):
+    order = db.session.query(Order.date, Order.total, OrderItem.quantity, OrderItem.cost, Book.title, Book.slug).select_from(Order).\
+        join(OrderItem).join(Book).filter(Order.id == id).all()
+
+    print(order[0].total)
+    return render_template("shop/order-page.html", order=order)
+
+
+@app.route('/book-page/<slug>', methods=['GET'])
+def book_page(slug):
+    book = db.session.query(Book.id, Book.title, Book.price, Book.year, Book.number_of_pages, Book.isbn, Book.annotation, Book.cover_type,\
+                            Author.name, Author.surname, Author.patronymic, Genre.genre_name)\
+                            .join(Author).join(Genre).filter(Book.slug == slug).first()
+    return render_template("shop/book-page.html", book=book)
 
 
 if __name__ == "__main__":

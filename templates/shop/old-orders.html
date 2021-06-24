@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Старые заказы
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="col-4">
+        <ul class="list-inline list-group-flush">
+            {% for order in orders %}
+            <li class="list-inline-item text-center" id="{{ order.id }}">
+                <div class="card text-center" style="width: 15rem; margin-right:10px">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="order-page/{{order.id}}">{{ order.date.strftime('%Y-%m-%d') }}</a></h5>
+                        <h6 class="card-title price">{{ order.total }}</h6>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <br>
+</div>
+</div>
+{% endblock %}
