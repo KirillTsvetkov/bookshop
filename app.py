@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, session, redirect
-from flask_sqlalchemy import SQLAlchemy
+from models import db, Book, Order, OrderItem, Author, Genre, Publisher, User
 from flask_migrate import Migrate
 from datetime import datetime
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
@@ -10,88 +10,11 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123@localhost/bookshop'
 app.config['SECRET_KEY'] = 'secret'
 
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-
-
-
-
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(40), nullable=False, unique=True)
-    name = db.Column(db.String(40), nullable=False)
-    surname = db.Column(db.String(40), nullable=False)
-    patronymic = db.Column(db.String(40), nullable=False)
-    email = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(30), nullable=False)
-
-
-class Author(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(40), nullable=False)
-    surname = db.Column(db.String(40), nullable=True)
-    patronymic = db.Column(db.String(40), nullable=True)
-
-    def __repr__(self):
-        return '<Author %r>' % self.name
-
-
-class Order(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', backref=db.backref('orders', lazy=True))
-    date = db.Column(db.DateTime, default=datetime.utcnow)
-    total = db.Column(db.Float, default=0)
-
-
-class OrderItem(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
-    order = db.relationship('Order', backref=db.backref('orderItems', lazy=True))
-    quantity = db.Column(db.Integer, nullable=False)
-    cost = db.Column(db.Float, nullable=False)
-    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
-    book = db.relationship('Book', backref=db.backref('orderItems', lazy=True))
-
-
-class Publisher(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    publisher_name = db.Column(db.String(100), nullable=False)
-
-    def __repr__(self):
-        return '<Publisher %r>' % self.publisher_name
-
-
-class Genre(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    genre_name = db.Column(db.String(40), nullable=False)
-
-    def __repr__(self):
-        return '<Genre %r>' % self.genre_name
-
-
-class Book(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    number_of_pages = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Float, nullable=False)
-    year = db.Column(db.Integer, nullable=False)
-    isbn = db.Column(db.String(100), nullable=False)
-    cover_type = db.Column(db.Boolean, nullable=False)
-    annotation = db.Column(db.Text, nullable=False)
-    slug = db.Column(db.String(255), nullable=False)
-    genre_id = db.Column(db.Integer, db.ForeignKey('genre.id'), nullable=False)
-    genre = db.relationship('Genre', backref=db.backref('books', lazy=True))
-    publisher_id = db.Column(db.Integer, db.ForeignKey('publisher.id'), nullable=False)
-    publisher = db.relationship('Publisher', backref=db.backref('books', lazy=True))
-    author_id = db.Column(db.Integer, db.ForeignKey('author.id'), nullable=False)
-    author = db.relationship('Author', backref=db.backref('books', lazy=True))
-
-    def __repr__(self):
-        return '<Book %r>' % self.title
 
 
 @login_manager.user_loader
@@ -342,16 +265,14 @@ def handle_books():
             } for book in books]
         return {"coutn": len(results), "users": results}
 
+def sqla2dict(model):
+    """ Declarative Base model to dict """
+    return {c.name: getattr(model, c.name) for c in model.__table__.columns}
 
 @app.route('/book/<int:id>', methods=["GET"])
 def get_book(id):
-    book = Book.query.get(id)
-    results = {
-            "title": book.title,
-            "price": book.price
-            }
-
-    return {"book": results}
+    book = db.session.query(Book).get(id)
+    return sqla2dict(book)
 
 
 @app.route('/book/<int:id>', methods=["PUT"])
@@ -813,7 +734,8 @@ def order_from_bag():
 def logout():
     session.clear()
     logout_user()
-    return "вы вышли"
+    books = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author).all()
+    return render_template('shop/home.html', books=books)
 
 
 @app.route('/old-orders', methods=['GET'])

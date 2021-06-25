@@ -4,6 +4,7 @@
 Главная
 {% endblock %}
 {% block body %}
+{% include 'shop/shop-header.html' %}
 
 <div class="container mt-5">
     <div class="row mb-5">
@@ -14,20 +15,7 @@
                 <button type="submit" class="btn btn-">Поиск</button>
             </form>
         </div>
-        <div class="col-1">
-            {{ current_user.username }}
-        </div>
-        {% if current_user.is_authenticated %}
-        <div class="col-1">
-            <a href="/bag">Корзина</a></div>
-        <div class="col-1">
-            <a href="/logout">Выход</a>
-        </div>
-        {% else %}
-        <div class="col-1">
-            <a href="/auth">Войти</a>
-        </div>
-        {% endif %}
+
     </div>
     <div class="row">
         {% for book in books %}
