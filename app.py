@@ -5,10 +5,14 @@ from datetime import datetime
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
 from sqlalchemy import asc, desc, or_, and_
 import jsonify
+from api.views import api
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123@localhost/bookshop'
 app.config['SECRET_KEY'] = 'secret'
+app.config['JSON_AS_ASCII'] = False
+
+app.register_blueprint(api, url_prefix='/api')
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -98,7 +102,8 @@ def edit_order_item(id):
 
 @app.route('/books-list', methods=["GET"])
 def bookslist():
-    books = db.session.query(Book.title, Book.id, Book.price, Author.name, Author.surname, Genre.genre_name, Publisher.publisher_name).join(Author).join(Genre).join(Publisher).all()
+    books = db.session.query(Book.title, Book.id, Book.price, Author.name, Author.surname, Genre.genre_name,
+                             Publisher.publisher_name).join(Author).join(Genre).join(Publisher).all()
     return render_template("books-list.html", books=books)
 
 
@@ -110,8 +115,9 @@ def orderslist():
 
 @app.route('/order_items-list', methods=["GET"])
 def order_itemslist():
-    order_items = db.session.query(OrderItem.id, OrderItem.quantity, OrderItem.cost, Order.date, User.username, Book.title).select_from(OrderItem).\
-                    join(OrderItem.order).join(Book).join(User)
+    order_items = db.session.query(OrderItem.id, OrderItem.quantity, OrderItem.cost, Order.date, User.username,
+                                   Book.title).select_from(OrderItem). \
+        join(OrderItem.order).join(Book).join(User)
     return render_template("order_items-list.html", order_items=order_items)
 
 
@@ -161,7 +167,6 @@ def create_order():
     return render_template("create-order.html", users=users)
 
 
-
 @app.route('/create-order_item', methods=["GET"])
 def create_order_item():
     orders = db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
@@ -169,487 +174,12 @@ def create_order_item():
     return render_template("create-order_item.html", orders=orders, books=books)
 
 
-@app.route('/genres', methods=["GET", "POST"])
-def handle_genres():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            genre = Genre(genre_name=data['genre_name'])
-            try:
-                db.session.add(genre)
-                db.session.commit()
-                return {"result": 0, "msg":f"genre {genre} успешно добавлен"}
-            except:
-                return {"result": 1, "error":"ошибка добавления"}
-        else:
-            return {"result": 1, "error": "The request payload is not in JSON format"}
-    else:
-        genres = Genre.query.all()
-        results = [
-            {
-                "genre_name": genre.genre_name
-            } for genre in genres]
-        return {"coutn": len(results), "genres": results}
-
-
-@app.route('/genre/<int:id>', methods=["PUT"])
-def update_genre(id):
-    genre = Genre.query.get(id)
-    data = request.get_json()
-    genre.genre_name = data['genre_name']
-    try:
-        db.session.commit()
-        results = {
-            "genre_name": genre.genre_name
-        }
-        return {"result": 0, "genre": results}
-    except:
-        return {"result": 1}
-
-
-@app.route('/genre/<int:id>', methods=["GET"])
-def get_genre(id):
-    genre = Genre.query.get(id)
-    results = {
-        "genre_name": genre.genre_name
-    }
-    return {"genre": results}
-
-
-@app.route('/genre/<int:id>', methods=["DELETE"])
-def delete_genre(id):
-    genre = Genre.query.get(id)
-    try:
-        db.session.delete(genre)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-@app.route('/books', methods=["GET", "POST"])
-def handle_books():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            book = Book(title = data['title'],
-                        price=float(data['price']), number_of_pages=int(data['number_of_pages']),
-                        year=int(data['year']), isbn=data['isbn'],
-                        cover_type=bool(data['cover_type']),
-                        annotation=data['annotation'], slug=data['slug'],
-                        genre_id=int(data['genre_id']), publisher_id=int(data['publisher_id']),
-                        author_id=int(data['author_id']))
-            try:
-                db.session.add(book)
-                db.session.commit()
-                return {"result": 0, "msg":f"book {book} успешно добавлен"}
-            except:
-                return {"result": 1, "error":"ошибка добавления"}
-        else:
-            return {"result": 1, "error": "The request payload is not in JSON format"}
-    else:
-        books = Book.query.all()
-        results = [
-            {
-                "title": book.title,
-                "price": float(book.price),
-                "number_of_pages": book.number_of_pages,
-                "year": book.year,
-                "isbn": book.isbn,
-                "cover_type": book.cover_type,
-                "annotation": book.annotation,
-                "slug": book.slug,
-                "genre_id": book.genre_id,
-                "publisher_id": book.publisher_id,
-                "author_id": book.author_id
-            } for book in books]
-        return {"coutn": len(results), "users": results}
-
-def sqla2dict(model):
-    """ Declarative Base model to dict """
-    return {c.name: getattr(model, c.name) for c in model.__table__.columns}
-
-@app.route('/book/<int:id>', methods=["GET"])
-def get_book(id):
-    book = db.session.query(Book).get(id)
-    return sqla2dict(book)
-
-
-@app.route('/book/<int:id>', methods=["PUT"])
-def update_book(id):
-    book = Book.query.get(id)
-    data = request.get_json()
-    book.title=data['title']
-    book.price=data['price']
-    book.number_of_pages=data['number_of_pages']
-    book.year=data['year']
-    book.isbn=data['isbn']
-    book.cover_type=bool(data['cover_type'])
-    book.annotation=data['annotation']
-    book.slug=data['slug']
-    book.genre_id=int(data['genre_id'])
-    book.publisher_id=int(data['publisher_id'])
-    book.author_id=int(data['author_id'])
-    try:
-        db.session.commit()
-        results = {
-                "title": book.title,
-                "price": book.price,
-                "number_of_pages": book.number_of_pages,
-                "year": book.year,
-                "isbn": book.isbn,
-                "cover_type": book.cover_type,
-                "annotation": book.annotation,
-                "slug": book.slug,
-                "genre_id": book.genre_id,
-                "publisher_id": book.publisher_id,
-                "author_id": book.author_id
-        }
-        return {"result":0, "book": results}
-    except:
-        return {"result":1}
-
-@app.route('/book/<int:id>', methods=["DELETE"])
-def delete_book(id):
-    book = Book.query.get(id)
-    try:
-        db.session.delete(book)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-@app.route('/order_items', methods=["GET", "POST"])
-def handle_order_items():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            count=0
-            for item in data:
-                order_item = OrderItem(order_id=int(item['order_id']), quantity=int(item['quantity']),
-                              cost=float(item['cost']), book_id=int(item['book_id']))
-                try:
-                    db.session.add(order_item)
-                    db.session.commit()
-                    order = order_item.order
-                    order.total += order_item.cost
-                    db.session.commit()
-                    count=count+1
-                except:
-                    return {"result": 1, "error": "ошибка добавления"}
-            if(count==len(data)):
-                return {"result": 0, "msg": 'Добавленно "+str(count)+" Записей"'}
-        else:
-            return {"result": 1, "error": "The request payload is not in JSON format"}
-    else:
-        orders = Order.query.all()
-        results = [
-            {
-                "total": order.total,
-                "date": order.date,
-                "user_id": order.user_id
-            } for order in orders]
-        return {"coutn": len(results), "orders": results}
-
-
-@app.route('/order_item/<int:id>', methods=["GET"])
-def get_order_item(id):
-    order_item = OrderItem.query.get(id)
-    results = {
-        "order_id": order_item.order_id,
-        "cost": order_item.cost,
-        "book_id": order_item.book_id,
-        "quantity": order_item.quantity
-    }
-    return {"order_item": results}
-
-
-@app.route('/order_item/<int:id>', methods=["DELETE"])
-def delete_order_item(id):
-    order_item = OrderItem.query.get(id)
-    try:
-        db.session.delete(order_item)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-@app.route('/order_item/<int:id>', methods=["PUT"])
-def update_order_item(id):
-    order_item = OrderItem.query.get(id)
-    data = request.get_json()
-    order_item.book_id = data['book_id']
-    order_item.cost = float(data['cost'])
-    order_item.order_id = data['order_id']
-    order_item.quantity = data['quantity']
-    order = order_item.order
-    try:
-        db.session.commit()
-        order_itemslist = OrderItem.query.filter(order == order).all()
-        sum = 0
-        for item in order_itemslist:
-            sum += item.cost
-        order.total=sum
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
 @app.route('/test', methods=["GET"])
 def test():
-    bookInfo = db.session.query(Book.title, Book.price, Author.name, Author.surname).join(Author).join(Genre).join(Publisher).all()
+    bookInfo = db.session.query(Book.title, Book.price, Author.name, Author.surname).join(Author).join(Genre).join(
+        Publisher).all()
 
     return "0"
-
-
-@app.route('/orders', methods=["GET", "POST"])
-def handle_orders():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            order = Order(user_id=data['user_id'], date=data['date'], total=data['total'])
-            try:
-                db.session.add(order)
-                db.session.commit()
-                return {"result": 0, "msg": f"order {order} успешно добавлен"}
-            except:
-                return {"result": 1, "error": "ошибка добавления"}
-        else:
-            return {"error": "The request payload is not in JSON format"}
-    else:
-        orders = Order.query.all()
-        results = [
-            {
-                "total": order.total,
-                "date": order.date,
-                "user_id": order.user_id
-            } for order in orders]
-        return {"coutn": len(results), "orders": results}
-
-
-@app.route('/order/<int:id>', methods=["DELETE"])
-def delete_order(id):
-    order = Order.query.get(id)
-    try:
-        db.session.delete(order)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-@app.route('/order/<int:id>', methods=["PUT"])
-def update_order(id):
-    order = Order.query.get(id)
-    data = request.get_json()
-    order.user_id = data['user_id']
-    order.total = data['total']
-    order.date = data['date']
-    try:
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-@app.route('/order/<int:id>', methods=["GET"])
-def get_order(id):
-    order = Order.query.get(id)
-    results = {
-        "user_id": order.user_id,
-        "total": order.total,
-        "date": order.date
-    }
-    return {"order": results}
-
-
-@app.route('/authors', methods=["GET", "POST"])
-def handle_authors():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            author = Author(name=data['name'], surname=data['surname'], patronymic=data['patronymic'])
-            try:
-                db.session.add(author)
-                db.session.commit()
-                return {"result": 0, "msg":f"author {author} успешно добавлен"}
-            except:
-                return {"result": 1, "error":"ошибка добавления"}
-        else:
-            return {"error": "The request payload is not in JSON format"}
-    else:
-        authors = Author.query.all()
-        results = [
-            {
-                "name": author.name,
-                "surname": author.surname,
-                "patronymic": author.patronymic
-            } for author in authors]
-        return {"coutn": len(results), "authors": results}
-
-
-@app.route('/author/<int:id>', methods=["DELETE"])
-def delete_author(id):
-    author = Author.query.get(id)
-    try:
-        db.session.delete(author)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-
-@app.route('/author/<int:id>', methods=["PUT"])
-def update_author(id):
-    author = Author.query.get(id)
-    data = request.get_json()
-    author.name = data['name']
-    author.surname = data['surname']
-    author.patronymic = data['patronymic']
-    try:
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-@app.route('/author/<int:id>', methods=["GET"])
-def get_author(id):
-    author = Author.query.get(id)
-    results = {
-        "name": author.name,
-        "surname": author.surname,
-        "patronymic": author.patronymic
-    }
-    return {"author": results}
-
-
-@app.route('/publishers', methods=["GET", "POST"])
-def handle_publishers():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            publisher = Publisher(publisher_name=data['publisher_name'])
-            try:
-                db.session.add(publisher)
-                db.session.commit()
-                return {"result": 0, "msg":f"publisher {publisher} успешно добавлен"}
-            except:
-                return {"result": 1, "error":"ошибка добавления"}
-        else:
-            return {"error": "The request payload is not in JSON format"}
-    else:
-        publishers = Publisher.query.all()
-        results = [
-            {
-                "publisher_name": publisher.publisher_name
-            } for publisher in publishers]
-        return {"coutn": len(results), "publishers": results}
-
-
-@app.route('/publisher/<int:id>', methods=["DELETE"])
-def delete_publisher(id):
-    publisher = Publisher.query.get(id)
-    try:
-        db.session.delete(publisher)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-@app.route('/publisher/<int:id>', methods=["PUT"])
-def update_publisher(id):
-    publisher = Publisher.query.get(id)
-    data = request.get_json()
-    publisher.publisher_name = data['publisher_name']
-    try:
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-@app.route('/publisher/<int:id>', methods=["GET"])
-def get_publisher(id):
-    publisher = Publisher.query.get(id)
-    results = {
-        "publisher_name": publisher.publisher_name
-    }
-    return {"publisher_name": results}
-
-
-@app.route('/users', methods=["GET", "POST"])
-def handle_users():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            user = User(username=data['username'], name=data['name'], surname=data['surname'], patronymic=data['patronymic'], email=data['email'], password=data['password'])
-            try:
-                db.session.add(user)
-                db.session.commit()
-                return {"result": 0, "msg":f"user {user} успешно добавлен"}
-            except:
-                return {"result": 1, "error":"ошибка добавления"}
-        else:
-            return {"error": "The request payload is not in JSON format"}
-    else:
-        users = User.query.all()
-        results = [
-            {
-                "username": user.username,
-                "name": user.name,
-                "surname": user.surname,
-                "patronymic": user.patronymic,
-                "email": user.email,
-                "password": user.password
-            } for user in users]
-        return {"coutn": len(results), "users": results}
-
-
-@app.route('/user/<int:id>', methods=["DELETE"])
-def delete_user(id):
-    user = User.query.get(id)
-    try:
-        db.session.delete(user)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-@app.route('/user/<int:id>', methods=["PUT"])
-def update_user(id):
-    user = User.query.get(id)
-    data = request.get_json()
-    user.username = data['username']
-    user.patronymic = data['patronymic']
-    user.name = data['name']
-    user.surname = data['surname']
-    user.password = data['password']
-    user.email = data['email']
-    try:
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
-
-
-@app.route('/user/<int:id>', methods=["GET"])
-def get_user(id):
-    user = User.query.get(id)
-    results = {
-        "name": user.name,
-        "surname": user.surname,
-        "patronymic": user.patronymic,
-        "username": user.username,
-        "email": user.email
-    }
-    return {"user": results}
 
 
 @app.route('/', methods=["GET"])
@@ -661,8 +191,8 @@ def home():
 @app.route('/search', methods=["GET"])
 def search():
     search = request.args.get('search')
-    books = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author).\
-        filter(or_(Book.title.like(search), Author.name.like(search), Author.surname.like(search),\
+    books = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author). \
+        filter(or_(Book.title.like(search), Author.name.like(search), Author.surname.like(search), \
                    Author.patronymic.like(search))).all()
     return render_template("shop/home.html", books=books)
 
@@ -697,10 +227,10 @@ def add_in_book():
 
 @app.route('/bag', methods=['GET'])
 def bag():
-    books_in_bag=[]
+    books_in_bag = []
     if 'books' in session:
         for book in session['books']:
-            book_in_bag = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author).\
+            book_in_bag = db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author). \
                 filter(Book.id == book).first()
             books_in_bag.append(book_in_bag)
             print(session['books'])
@@ -717,17 +247,19 @@ def order_from_bag():
         db.session.add(order)
         db.session.commit()
     except:
-        return {"result":1}
+        return {"result": 1}
     order_items_list = data['order_items_list']
     for item in order_items_list:
-        order_item = OrderItem(book_id=int(item['book_id']), quantity=int(item['quantity']), order=order, cost=float(item['cost']))
+        order_item = OrderItem(book_id=int(item['book_id']), quantity=int(item['quantity']), order=order,
+                               cost=float(item['cost']))
         try:
             db.session.add(order_item)
             db.session.commit()
         except:
             return {"result": 1}
-    session['books']=[]
-    return {"result":0}
+    session['books'] = []
+    return {"result": 0}
+
 
 @app.route('/logout')
 @login_required
@@ -748,7 +280,8 @@ def old_orders():
 
 @app.route('/order-page/<int:id>', methods=['GET'])
 def order_page(id):
-    order = db.session.query(Order.date, Order.total, OrderItem.quantity, OrderItem.cost, Book.title, Book.slug).select_from(Order).\
+    order = db.session.query(Order.date, Order.total, OrderItem.quantity, OrderItem.cost, Book.title,
+                             Book.slug).select_from(Order). \
         join(OrderItem).join(Book).filter(Order.id == id).all()
 
     print(order[0].total)
@@ -757,9 +290,10 @@ def order_page(id):
 
 @app.route('/book-page/<slug>', methods=['GET'])
 def book_page(slug):
-    book = db.session.query(Book.id, Book.title, Book.price, Book.year, Book.number_of_pages, Book.isbn, Book.annotation, Book.cover_type,\
-                            Author.name, Author.surname, Author.patronymic, Genre.genre_name)\
-                            .join(Author).join(Genre).filter(Book.slug == slug).first()
+    book = db.session.query(Book.id, Book.title, Book.price, Book.year, Book.number_of_pages, Book.isbn,
+                            Book.annotation, Book.cover_type, \
+                            Author.name, Author.surname, Author.patronymic, Genre.genre_name) \
+        .join(Author).join(Genre).filter(Book.slug == slug).first()
     return render_template("shop/book-page.html", book=book)
 
 

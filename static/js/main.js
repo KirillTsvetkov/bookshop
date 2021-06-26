@@ -11,15 +11,15 @@ function getFormData($form){
 
 function create(type){
     var formData = $("#js-form");
-    url = "/"+type;
+    url = "/api/"+type;
     formData=getFormData(formData);
-    if(url == "/order_items"){
+    if(url == "/api/order_items"){
         formData = [formData]
     }
     console.log(formData, url);
     $.ajax({
         type: "POST",
-        url: type,
+        url: url,
         contentType : "application/json",
         dataType: "json",
         data:JSON.stringify(formData),
@@ -43,7 +43,7 @@ function update(type,id){
     var formData = $("#js-form");
     formData=getFormData(formData);
     console.log(formData);
-    url = "/"+type+"/"+id;
+    url = "/api/"+type+"/"+id;
     $.ajax({
         type: "PUT",
         url: url,
@@ -68,7 +68,7 @@ function update(type,id){
 function delete_post(type,id,e){
     row = $(event.target).closest('tr');
     console.log(row);
-    url = "/"+type+"/"+id;
+    url = "/api/"+type+"/"+id;
     $.ajax({
         type: "DELETE",
         url: url,
