@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, render_template
 from models import db, Book, Order, OrderItem, Author, Genre, Publisher, User
 from .services import *
 
-crud = Blueprint('crud', __name__, template_folder='templates')
+crud = Blueprint('crud', __name__,template_folder='templates', static_folder='static')
 
 
 @crud.route('/genres-list', methods=["GET"])

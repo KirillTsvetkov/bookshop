@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'crud/base.html' %}
 
 {% block title %}
 Список авторов
@@ -8,7 +8,7 @@
 {% include 'crud/crud-header.html' %}
 <div class="container mt-5">
     <h1>Список авторов</h1>
-    <a href="/create-author">Создать нового автора</a>
+    <a href="/crud/create-author">Создать нового автора</a>
     <br>
     {% for author in authors %}
         {{ author.name + author.surname + author.patronymic }}

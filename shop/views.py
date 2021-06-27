@@ -6,7 +6,7 @@ from flask_login import login_required, logout_user, login_user, current_user
 
 from .services import *
 
-shop = Blueprint('shop', __name__, template_folder='templates')
+shop = Blueprint('shop', __name__, template_folder='templates', static_folder='static')
 
 
 @shop.route('/', methods=["GET"])

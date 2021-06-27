@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'crud/base.html' %}
 
 {% block title %}
 Список заказов
@@ -8,7 +8,7 @@
 {% include 'crud/crud-header.html' %}
 <div class="container mt-5">
     <h1>Список заказов</h1>
-    <a href="/create-order">Создать новый заказ</a>
+    <a href="/crud/create-order">Создать новый заказ</a>
     <br>
     <table class="table">
         <thead>
