@@ -13,13 +13,7 @@ def book(id):
 
 @api.route('/book/<int:id>', methods=["DELETE"])
 def delete_book(id):
-    book = Book.query.get(id)
-    try:
-        db.session.delete(book)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    return del_book(id)
 
 
 @api.route('/book/<int:id>', methods=["PUT"])
@@ -34,19 +28,7 @@ def handle_books():
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json()
-            book = Book(title=data['title'],
-                        price=float(data['price']), number_of_pages=int(data['number_of_pages']),
-                        year=int(data['year']), isbn=data['isbn'],
-                        cover_type=bool(data['cover_type']),
-                        annotation=data['annotation'], slug=data['slug'],
-                        genre_id=int(data['genre_id']), publisher_id=int(data['publisher_id']),
-                        author_id=int(data['author_id']))
-            try:
-                db.session.add(book)
-                db.session.commit()
-                return {"result": 0, "msg": f"book {book} успешно добавлен"}
-            except:
-                return {"result": 1, "error": "ошибка добавления"}
+            return create_book(data)
         else:
             return {"result": 1, "error": "The request payload is not in JSON format"}
     else:
@@ -65,14 +47,7 @@ def handle_users():
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json()
-            user = User(username=data['username'], name=data['name'], surname=data['surname'],
-                        patronymic=data['patronymic'], email=data['email'], password=data['password'])
-            try:
-                db.session.add(user)
-                db.session.commit()
-                return {"result": 0, "msg": f"user {user} успешно добавлен"}
-            except:
-                return {"result": 1, "error": "ошибка добавления"}
+            return create_user(data)
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
@@ -82,13 +57,7 @@ def handle_users():
 
 @api.route('/user/<int:id>', methods=["DELETE"])
 def delete_user(id):
-    user = User.query.get(id)
-    try:
-        db.session.delete(user)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    return del_user(id)
 
 
 @api.route('/user/<int:id>', methods=["PUT"])
@@ -103,13 +72,7 @@ def handle_publishers():
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json()
-            publisher = Publisher(publisher_name=data['publisher_name'])
-            try:
-                db.session.add(publisher)
-                db.session.commit()
-                return {"result": 0, "msg": f"publisher {publisher} успешно добавлен"}
-            except:
-                return {"result": 1, "error": "ошибка добавления"}
+            return create_publisher(data)
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
@@ -119,13 +82,7 @@ def handle_publishers():
 
 @api.route('/publisher/<int:id>', methods=["DELETE"])
 def delete_publisher(id):
-    publisher = Publisher.query.get(id)
-    try:
-        db.session.delete(publisher)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    return del_publisher(id)
 
 
 @api.route('/publisher/<int:id>', methods=["PUT"])
@@ -146,13 +103,7 @@ def handle_authors():
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json()
-            author = Author(name=data['name'], surname=data['surname'], patronymic=data['patronymic'])
-            try:
-                db.session.add(author)
-                db.session.commit()
-                return {"result": 0, "msg": f"author {author} успешно добавлен"}
-            except:
-                return {"result": 1, "error": "ошибка добавления"}
+            return create_author(data)
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
@@ -162,13 +113,7 @@ def handle_authors():
 
 @api.route('/author/<int:id>', methods=["DELETE"])
 def delete_author(id):
-    author = Author.query.get(id)
-    try:
-        db.session.delete(author)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    return del_author(id)
 
 
 @api.route('/author/<int:id>', methods=["PUT"])
@@ -189,13 +134,7 @@ def handle_orders():
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json()
-            order = Order(user_id=data['user_id'], date=data['date'], total=data['total'])
-            try:
-                db.session.add(order)
-                db.session.commit()
-                return {"result": 0, "msg": f"order {order} успешно добавлен"}
-            except:
-                return {"result": 1, "error": "ошибка добавления"}
+            return create_order(data)
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
@@ -205,13 +144,7 @@ def handle_orders():
 
 @api.route('/order/<int:id>', methods=["DELETE"])
 def delete_order(id):
-    order = Order.query.get(id)
-    try:
-        db.session.delete(order)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    return del_order(id)
 
 
 @api.route('/order/<int:id>', methods=["PUT"])
@@ -232,21 +165,7 @@ def handle_order_items():
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json()
-            count = 0
-            for item in data:
-                order_item = OrderItem(order_id=int(item['order_id']), quantity=int(item['quantity']),
-                                       cost=float(item['cost']), book_id=int(item['book_id']))
-                try:
-                    db.session.add(order_item)
-                    db.session.commit()
-                    order = order_item.order
-                    order.total += order_item.cost
-                    db.session.commit()
-                    count = count + 1
-                except:
-                    return {"result": 1, "error": "ошибка добавления"}
-            if (count == len(data)):
-                return {"result": 0, "msg": 'Добавленно "+str(count)+" Записей"'}
+            return create_orderitems(data)
         else:
             return {"result": 1, "error": "The request payload is not in JSON format"}
     else:
@@ -262,13 +181,7 @@ def order_item(id):
 
 @api.route('/order_item/<int:id>', methods=["DELETE"])
 def delete_order_item(id):
-    order_item = OrderItem.query.get(id)
-    try:
-        db.session.delete(order_item)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    return del_order_item(id)
 
 
 @api.route('/order_item/<int:id>', methods=["PUT"])
@@ -283,13 +196,7 @@ def handle_genres():
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json()
-            genre = Genre(genre_name=data['genre_name'])
-            try:
-                db.session.add(genre)
-                db.session.commit()
-                return {"result": 0, "msg": f"genre {genre} успешно добавлен"}
-            except:
-                return {"result": 1, "error": "ошибка добавления"}
+            return create_genre(data)
         else:
             return {"result": 1, "error": "The request payload is not in JSON format"}
     else:
@@ -312,10 +219,4 @@ def genre(id):
 
 @api.route('/genre/<int:id>', methods=["DELETE"])
 def delete_genre(id):
-    genre = Genre.query.get(id)
-    try:
-        db.session.delete(genre)
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    return del_genre(id)
