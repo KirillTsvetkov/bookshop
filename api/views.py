@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from flask import Blueprint, jsonify, request
 from .services import *
 
@@ -79,22 +78,8 @@ def handle_books():
         else:
             return {"result": 1, "error": "The request payload is not in JSON format"}
     else:
-        books = Book.query.all()
-        results = [
-            {
-                "title": book.title,
-                "price": float(book.price),
-                "number_of_pages": book.number_of_pages,
-                "year": book.year,
-                "isbn": book.isbn,
-                "cover_type": book.cover_type,
-                "annotation": book.annotation,
-                "slug": book.slug,
-                "genre_id": book.genre_id,
-                "publisher_id": book.publisher_id,
-                "author_id": book.author_id
-            } for book in books]
-        return {"coutn": len(results), "users": results}
+        result = get_books()
+        return jsonify({'result': result})
 
 
 @api.route('/user/<int:id>', methods=["GET"])
@@ -119,17 +104,8 @@ def handle_users():
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
-        users = User.query.all()
-        results = [
-            {
-                "username": user.username,
-                "name": user.name,
-                "surname": user.surname,
-                "patronymic": user.patronymic,
-                "email": user.email,
-                "password": user.password
-            } for user in users]
-        return {"coutn": len(results), "users": results}
+        result = get_users()
+        return jsonify({'result': result})
 
 
 @api.route('/user/<int:id>', methods=["DELETE"])
@@ -175,12 +151,8 @@ def handle_publishers():
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
-        publishers = Publisher.query.all()
-        results = [
-            {
-                "publisher_name": publisher.publisher_name
-            } for publisher in publishers]
-        return {"coutn": len(results), "publishers": results}
+        result = get_publishers()
+        return jsonify({'result': result})
 
 
 @api.route('/publisher/<int:id>', methods=["DELETE"])
@@ -227,14 +199,8 @@ def handle_authors():
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
-        authors = Author.query.all()
-        results = [
-            {
-                "name": author.name,
-                "surname": author.surname,
-                "patronymic": author.patronymic
-            } for author in authors]
-        return {"coutn": len(results), "authors": results}
+        result = get_authors()
+        return jsonify({'result': result})
 
 
 @api.route('/author/<int:id>', methods=["DELETE"])
@@ -283,14 +249,8 @@ def handle_orders():
         else:
             return {"error": "The request payload is not in JSON format"}
     else:
-        orders = Order.query.all()
-        results = [
-            {
-                "total": order.total,
-                "date": order.date,
-                "user_id": order.user_id
-            } for order in orders]
-        return {"coutn": len(results), "orders": results}
+        result = get_orders()
+        return jsonify({'result': result})
 
 
 @api.route('/order/<int:id>', methods=["DELETE"])
@@ -347,14 +307,8 @@ def handle_order_items():
         else:
             return {"result": 1, "error": "The request payload is not in JSON format"}
     else:
-        orders = Order.query.all()
-        results = [
-            {
-                "total": order.total,
-                "date": order.date,
-                "user_id": order.user_id
-            } for order in orders]
-        return {"coutn": len(results), "orders": results}
+        result = get_order_items()
+        return jsonify({'result': result})
 
 
 @api.route('/order_item/<int:id>', methods=["GET"])
@@ -411,12 +365,8 @@ def handle_genres():
         else:
             return {"result": 1, "error": "The request payload is not in JSON format"}
     else:
-        genres = Genre.query.all()
-        results = [
-            {
-                "genre_name": genre.genre_name
-            } for genre in genres]
-        return {"coutn": len(results), "genres": results}
+        result = get_genres()
+        return jsonify({'result': result})
 
 
 @api.route('/genre/<int:id>', methods=["PUT"])

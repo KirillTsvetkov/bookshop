@@ -6,6 +6,8 @@ from flask_login import LoginManager, UserMixin, login_required, logout_user, lo
 from sqlalchemy import asc, desc, or_, and_
 import jsonify
 from api.views import api
+from crud.views import crud
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123@localhost/bookshop'
@@ -13,6 +15,8 @@ app.config['SECRET_KEY'] = 'secret'
 app.config['JSON_AS_ASCII'] = False
 
 app.register_blueprint(api, url_prefix='/api')
+app.register_blueprint(crud, url_prefix='/crud')
+
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -24,154 +28,6 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-
-@app.route('/genres-list', methods=["GET"])
-def genreslist():
-    genres = Genre.query.all()
-    return render_template("genres-list.html", genres=genres)
-
-
-@app.route('/publishers-list', methods=["GET"])
-def publisherslist():
-    publishers = Publisher.query.all()
-    return render_template("publishers-list.html", publishers=publishers)
-
-
-@app.route('/authors-list', methods=["GET"])
-def authorslist():
-    authors = Author.query.all()
-    return render_template("authors-list.html", authors=authors)
-
-
-@app.route('/edit-author/<int:id>', methods=["GET"])
-def edit_author(id):
-    author = Author.query.get(id)
-    if author is None:
-        return "Издатель не найден"
-    return render_template("edit-author.html", author=author)
-
-
-@app.route('/edit-user/<int:id>', methods=["GET"])
-def edit_user(id):
-    user = User.query.get(id)
-    print(user.username)
-    if user is None:
-        return "Пользователь не найден"
-    return render_template("edit-user.html", user=user)
-
-
-@app.route('/edit-publisher/<int:id>', methods=["GET"])
-def edit_publisher(id):
-    publisher = Publisher.query.get(id)
-    if publisher is None:
-        return "Издатель не найден"
-    return render_template("edit-publisher.html", publisher=publisher)
-
-
-@app.route('/edit-book/<int:id>', methods=["GET"])
-def edit_book(id):
-    book = Book.query.get(id)
-    if book is None:
-        return "Книга не найдена"
-    authors = Author.query.all()
-    genres = Genre.query.all()
-    publishers = Publisher.query.all()
-    return render_template("edit-book.html", book=book, authors=authors, genres=genres, publishers=publishers)
-
-
-@app.route('/edit-order/<int:id>', methods=["GET"])
-def edit_order(id):
-    order = Order.query.get(id)
-    if order is None:
-        return "Заказ не найден"
-    users = User.query.all()
-
-    return render_template("edit-order.html", order=order, users=users)
-
-
-@app.route('/edit-order_item/<int:id>', methods=["GET"])
-def edit_order_item(id):
-    order_item = OrderItem.query.get(id)
-    if order_item is None:
-        return "Позиция заказа не найдена"
-    books = Book.query.all()
-    orders = db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
-    return render_template("edit-order_item.html", order_item=order_item, books=books, orders=orders)
-
-
-@app.route('/books-list', methods=["GET"])
-def bookslist():
-    books = db.session.query(Book.title, Book.id, Book.price, Author.name, Author.surname, Genre.genre_name,
-                             Publisher.publisher_name).join(Author).join(Genre).join(Publisher).all()
-    return render_template("books-list.html", books=books)
-
-
-@app.route('/orders-list', methods=["GET"])
-def orderslist():
-    orders = db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
-    return render_template("orders-list.html", orders=orders)
-
-
-@app.route('/order_items-list', methods=["GET"])
-def order_itemslist():
-    order_items = db.session.query(OrderItem.id, OrderItem.quantity, OrderItem.cost, Order.date, User.username,
-                                   Book.title).select_from(OrderItem). \
-        join(OrderItem.order).join(Book).join(User)
-    return render_template("order_items-list.html", order_items=order_items)
-
-
-@app.route('/users-list', methods=["GET"])
-def userslist():
-    users = User.query.all()
-    return render_template("users-list.html", users=users)
-
-
-@app.route('/edit-genre/<int:id>', methods=["GET"])
-def edit_genre(id):
-    genre = Genre.query.get(id)
-    return render_template("edit-genre.html", genre=genre)
-
-
-@app.route('/create-genre', methods=["GET"])
-def create_genre():
-    return render_template("create-genre.html")
-
-
-@app.route('/create-user', methods=["GET"])
-def create_user():
-    return render_template("create-user.html")
-
-
-@app.route('/create-book', methods=["GET"])
-def create_book():
-    genres = Genre.query.all()
-    authors = Author.query.all()
-    publishers = Publisher.query.all()
-    return render_template("create-book.html", genres=genres, authors=authors, publishers=publishers)
-
-
-@app.route('/create-author', methods=["GET"])
-def create_author():
-    return render_template("create-author.html")
-
-
-@app.route('/create-publisher', methods=["GET"])
-def create_publisher():
-    return render_template("create-publisher.html")
-
-
-@app.route('/create-order', methods=["GET"])
-def create_order():
-    users = db.session.query(User.id, User.username)
-    return render_template("create-order.html", users=users)
-
-
-@app.route('/create-order_item', methods=["GET"])
-def create_order_item():
-    orders = db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
-    books = db.session.query(Book.id, Book.title).all()
-    return render_template("create-order_item.html", orders=orders, books=books)
 
 
 @app.route('/test', methods=["GET"])
@@ -291,7 +147,7 @@ def order_page(id):
 @app.route('/book-page/<slug>', methods=['GET'])
 def book_page(slug):
     book = db.session.query(Book.id, Book.title, Book.price, Book.year, Book.number_of_pages, Book.isbn,
-                            Book.annotation, Book.cover_type, \
+                            Book.annotation, Book.cover_type,\
                             Author.name, Author.surname, Author.patronymic, Genre.genre_name) \
         .join(Author).join(Genre).filter(Book.slug == slug).first()
     return render_template("shop/book-page.html", book=book)
