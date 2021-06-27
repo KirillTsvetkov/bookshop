@@ -7,7 +7,7 @@ crud = Blueprint('crud', __name__,template_folder='templates', static_folder='st
 
 @crud.route('/genres-list', methods=["GET"])
 def genreslist():
-    genres = Genre.query.all()
+    genres = Genre.get_all_genres()
     return render_template("crud/genres-list.html", genres=genres)
 
 
@@ -149,7 +149,6 @@ def create_user():
 @crud.route('/edit-user/<int:id>', methods=["GET"])
 def edit_user(id):
     user = User.query.get(id)
-    print(user.username)
     if user is None:
         return "Пользователь не найден"
     return render_template("crud/edit-user.html", user=user)

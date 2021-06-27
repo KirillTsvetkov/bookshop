@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
+from sqlalchemy import or_, desc
 
 db = SQLAlchemy()
 
@@ -13,6 +14,11 @@ class User(db.Model, UserMixin):
     patronymic = db.Column(db.String(40), nullable=False)
     email = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(30), nullable=False)
+
+
+    @classmethod
+    def get_by_username(cls, username):
+        return User.query.filter_by(username=username).first()
 
 
 class Author(db.Model):
@@ -31,6 +37,18 @@ class Order(db.Model):
     user = db.relationship('User', backref=db.backref('orders', lazy=True))
     date = db.Column(db.DateTime, default=datetime.utcnow)
     total = db.Column(db.Float, default=0)
+
+
+    @classmethod
+    def old_orders(cls, user_id):
+        return Order.query.filter(Order.user_id == user_id).order_by(desc(Order.date)).all()
+
+
+    @classmethod
+    def view_info(cls, id):
+        return db.session.query(Order.date, Order.total, OrderItem.quantity, OrderItem.cost, Book.title,
+                         Book.slug).select_from(Order). \
+            join(OrderItem).join(Book).filter(Order.id == id).all()
 
 
 class OrderItem(db.Model):
@@ -58,6 +76,10 @@ class Genre(db.Model):
     def __repr__(self):
         return '<Genre %r>' % self.genre_name
 
+    @classmethod
+    def get_all_genres(cls):
+        return Genre.query.all()
+
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -79,3 +101,28 @@ class Book(db.Model):
     def __repr__(self):
         return '<Book %r>' % self.title
 
+
+    @classmethod
+    def get_main_info(cls):
+        return db.session.query(Book.id, Book.slug,Book.title, Book.price, Author.name, Author.surname).join(Author).all()
+
+
+    @classmethod
+    def search(cls, search):
+        return db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author). \
+            filter(or_(Book.title.like(search), Author.name.like(search), Author.surname.like(search), \
+                       Author.patronymic.like(search))).all()
+
+
+    @classmethod
+    def info_for_page(cls, slug):
+        return db.session.query(Book.id, Book.title, Book.price, Book.year, Book.number_of_pages, Book.isbn,
+                         Book.annotation, Book.cover_type, \
+                         Author.name, Author.surname, Author.patronymic, Genre.genre_name) \
+            .join(Author).join(Genre).filter(Book.slug == slug).first()
+
+
+    @classmethod
+    def in_bag(cls, book_id):
+        return db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author). \
+            filter(Book.id == book_id).first()
