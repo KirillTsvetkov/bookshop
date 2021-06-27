@@ -11,19 +11,19 @@
                 <a class="nav-link">{{ current_user.username }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/bag">Корзина</a>
+                <a class="nav-link" href="/shop/bag">Корзина</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/old-orders">Старые заказы</a>
+                <a class="nav-link" href="/shop/old-orders">Старые заказы</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/logout">Выйти</a>
+                <a class="nav-link" href="/shop/logout">Выйти</a>
             </li>
 
 
             {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="/auth">Войти</a>
+                <a class="nav-link" href="/shop/auth">Войти</a>
             </li>
             {% endif %}
         </ul>

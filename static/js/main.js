@@ -95,7 +95,7 @@ function delete_post(type,id,e){
 
 function addbook(id){
      $.ajax({
-            url:"/add_in_bag",
+            url:"/shop/add_in_bag",
             method:"POST",
             data:{book_id:id},
             success:function(response){
@@ -107,7 +107,7 @@ function addbook(id){
 
 function createOrder(){
     order_items_list=[];
-    $( "li" ).each(function( index ) {
+    $( ".item" ).each(function( index ) {
         quantity = $(this).find('input').val();
         book_id = $( this ).attr("id");
         cost = Number($(this).find('.item-cost').text())
@@ -123,7 +123,7 @@ function createOrder(){
 
     $.ajax({
         type: "POST",
-        url: "/order_from_bag",
+        url: "/shop/order_from_bag",
         contentType : "application/json",
         dataType: "json",
         data:JSON.stringify({"order_items_list": order_items_list,
