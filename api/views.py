@@ -24,37 +24,9 @@ def delete_book(id):
 
 @api.route('/book/<int:id>', methods=["PUT"])
 def update_book(id):
-    book = Book.query.get(id)
     data = request.get_json()
-    book.title = data['title']
-    book.price = data['price']
-    book.number_of_pages = data['number_of_pages']
-    book.year = data['year']
-    book.isbn = data['isbn']
-    book.cover_type = bool(data['cover_type'])
-    book.annotation = data['annotation']
-    book.slug = data['slug']
-    book.genre_id = int(data['genre_id'])
-    book.publisher_id = int(data['publisher_id'])
-    book.author_id = int(data['author_id'])
-    try:
-        db.session.commit()
-        results = {
-            "title": book.title,
-            "price": book.price,
-            "number_of_pages": book.number_of_pages,
-            "year": book.year,
-            "isbn": book.isbn,
-            "cover_type": book.cover_type,
-            "annotation": book.annotation,
-            "slug": book.slug,
-            "genre_id": book.genre_id,
-            "publisher_id": book.publisher_id,
-            "author_id": book.author_id
-        }
-        return {"result": 0, "book": results}
-    except:
-        return {"result": 1}
+    result = edit_book(id, data)
+    return result
 
 
 @api.route('/books', methods=["GET", "POST"])
@@ -121,19 +93,9 @@ def delete_user(id):
 
 @api.route('/user/<int:id>', methods=["PUT"])
 def update_user(id):
-    user = User.query.get(id)
     data = request.get_json()
-    user.username = data['username']
-    user.patronymic = data['patronymic']
-    user.name = data['name']
-    user.surname = data['surname']
-    user.password = data['password']
-    user.email = data['email']
-    try:
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    result = edit_book(id, data)
+    return result
 
 
 @api.route('/publishers', methods=["GET", "POST"])
@@ -168,14 +130,9 @@ def delete_publisher(id):
 
 @api.route('/publisher/<int:id>', methods=["PUT"])
 def update_publisher(id):
-    publisher = Publisher.query.get(id)
     data = request.get_json()
-    publisher.publisher_name = data['publisher_name']
-    try:
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    result = edit_publisher(id, data)
+    return result
 
 
 @api.route('/publisher/<int:id>', methods=["GET"])
@@ -216,16 +173,9 @@ def delete_author(id):
 
 @api.route('/author/<int:id>', methods=["PUT"])
 def update_author(id):
-    author = Author.query.get(id)
     data = request.get_json()
-    author.name = data['name']
-    author.surname = data['surname']
-    author.patronymic = data['patronymic']
-    try:
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    result = edit_author(id, data)
+    return result
 
 
 @api.route('/author/<int:id>', methods=["GET"])
@@ -266,16 +216,9 @@ def delete_order(id):
 
 @api.route('/order/<int:id>', methods=["PUT"])
 def update_order(id):
-    order = Order.query.get(id)
     data = request.get_json()
-    order.user_id = data['user_id']
-    order.total = data['total']
-    order.date = data['date']
-    try:
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    result = edit_order(id, data)
+    return result
 
 
 @api.route('/order/<int:id>', methods=["GET"])
@@ -330,24 +273,9 @@ def delete_order_item(id):
 
 @api.route('/order_item/<int:id>', methods=["PUT"])
 def update_order_item(id):
-    order_item = OrderItem.query.get(id)
     data = request.get_json()
-    order_item.book_id = data['book_id']
-    order_item.cost = float(data['cost'])
-    order_item.order_id = data['order_id']
-    order_item.quantity = data['quantity']
-    order = order_item.order
-    try:
-        db.session.commit()
-        order_itemslist = OrderItem.query.filter(order == order).all()
-        sum = 0
-        for item in order_itemslist:
-            sum += item.cost
-        order.total = sum
-        db.session.commit()
-        return {"result": 0}
-    except:
-        return {"result": 1}
+    result = edit_order_item(id, data)
+    return result
 
 
 @api.route('/genres', methods=["GET", "POST"])
@@ -371,17 +299,9 @@ def handle_genres():
 
 @api.route('/genre/<int:id>', methods=["PUT"])
 def update_genre(id):
-    genre = Genre.query.get(id)
     data = request.get_json()
-    genre.genre_name = data['genre_name']
-    try:
-        db.session.commit()
-        results = {
-            "genre_name": genre.genre_name
-        }
-        return {"result": 0, "genre": results}
-    except:
-        return {"result": 1}
+    result = edit_genre(id, data)
+    return result
 
 
 @api.route('/genre/<int:id>', methods=["GET"])

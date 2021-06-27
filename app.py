@@ -1,9 +1,7 @@
-from flask import Flask, request, render_template, session, redirect
-from models import db, Book, Order, OrderItem, Author, Genre, Publisher, User
+from flask import Flask
+from models import db, User
 from flask_migrate import Migrate
-from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
-from sqlalchemy import asc, desc, or_, and_
-import jsonify
+from flask_login import LoginManager
 from api.views import api
 from crud.views import crud
 from shop.views import shop
