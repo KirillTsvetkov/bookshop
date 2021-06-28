@@ -23,14 +23,7 @@ def search():
 @shop.route('/auth', methods=['POST', 'GET'])
 def auth():
     if request.method == "POST":
-        username = request.form['username']
-        password = request.form['password']
-        user = User.get_by_username(username)
-        if user.password == password:
-            login_user(user)
-            return redirect('/shop')
-        else:
-            return "Неверный пароль"
+        return login(request.form)
     else:
         return render_template("shop/auth.html")
 

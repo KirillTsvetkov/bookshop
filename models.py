@@ -17,8 +17,17 @@ class User(db.Model, UserMixin):
 
 
     @classmethod
+    def list(cls):
+        return User.query.all()
+
+    @classmethod
     def get_by_username(cls, username):
         return User.query.filter_by(username=username).first()
+
+
+    @classmethod
+    def get_all_usernames(cls):
+        return db.session.query(User.id, User.username)
 
 
 class Author(db.Model):
@@ -38,6 +47,10 @@ class Order(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
     total = db.Column(db.Float, default=0)
 
+    @classmethod
+    def list(cls):
+        return db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
+
 
     @classmethod
     def old_orders(cls, user_id):
@@ -51,6 +64,11 @@ class Order(db.Model):
             join(OrderItem).join(Book).filter(Order.id == id).all()
 
 
+    @classmethod
+    def all_orders(cls):
+        return db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
+
+
 class OrderItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
@@ -59,6 +77,18 @@ class OrderItem(db.Model):
     cost = db.Column(db.Float, nullable=False)
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
     book = db.relationship('Book', backref=db.backref('orderItems', lazy=True))
+
+
+    @classmethod
+    def list(cls):
+        return db.session.query(OrderItem.id, OrderItem.quantity, OrderItem.cost, Order.date, User.username,
+                         Book.title).select_from(OrderItem). \
+            join(OrderItem.order).join(Book).join(User)
+
+
+    @classmethod
+    def all_items_in_order(cls, order):
+        return OrderItem.query.filter(order == order).all()
 
 
 class Publisher(db.Model):
@@ -100,6 +130,16 @@ class Book(db.Model):
 
     def __repr__(self):
         return '<Book %r>' % self.title
+
+
+    @classmethod
+    def list(cls):
+        return db.session.query(Book.title, Book.id, Book.price, Author.name, Author.surname, Genre.genre_name,
+                         Publisher.publisher_name).join(Author).join(Genre).join(Publisher).all()
+
+    @classmethod
+    def get_all_titles(cls):
+        return db.session.query(Book.id, Book.title).all()
 
 
     @classmethod

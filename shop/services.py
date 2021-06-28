@@ -1,7 +1,7 @@
-from flask import session
-from models import db, Book, Order, OrderItem
+from flask import session, redirect
+from models import db, Book, Order, OrderItem, User
 from datetime import datetime
-
+from flask_login import login_user
 
 def create_order_from_bag(data, user_id):
     total = data['order']['total']
@@ -41,3 +41,15 @@ def create_shop_card():
             book_in_bag = Book.in_bag(book)
             books_in_bag.append(book_in_bag)
     return books_in_bag
+
+
+def login(data):
+    username = data['username']
+    password = data['password']
+    user = User.get_by_username(username)
+    if user.password == password:
+        login_user(user)
+        return redirect('/shop')
+    else:
+        return "Неверный пароль"
+

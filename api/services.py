@@ -291,7 +291,7 @@ def edit_order_item(id, data):
     order = order_item.order
     try:
         db.session.commit()
-        order_itemslist = OrderItem.query.filter(order == order).all()
+        order_itemslist = OrderItem.all_items_in_order(order)
         sum = 0
         for item in order_itemslist:
             sum += item.cost

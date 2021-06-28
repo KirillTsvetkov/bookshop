@@ -63,8 +63,7 @@ def edit_author(id):
 
 @crud.route('/books-list', methods=["GET"])
 def bookslist():
-    books = db.session.query(Book.title, Book.id, Book.price, Author.name, Author.surname, Genre.genre_name,
-                             Publisher.publisher_name).join(Author).join(Genre).join(Publisher).all()
+    books = Book.list()
     return render_template("crud/books-list.html", books=books)
 
 
@@ -90,13 +89,13 @@ def edit_book(id):
 
 @crud.route('/orders-list', methods=["GET"])
 def orderslist():
-    orders = db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
+    orders = Order.list()
     return render_template("crud/orders-list.html", orders=orders)
 
 
 @crud.route('/create-order', methods=["GET"])
 def create_order():
-    users = db.session.query(User.id, User.username)
+    users = User.get_all_usernames()
     return render_template("crud/create-order.html", users=users)
 
 
@@ -106,15 +105,12 @@ def edit_order(id):
     if order is None:
         return "Заказ не найден"
     users = User.query.all()
-
     return render_template("crud/edit-order.html", order=order, users=users)
 
 
 @crud.route('/order_items-list', methods=["GET"])
 def order_itemslist():
-    order_items = db.session.query(OrderItem.id, OrderItem.quantity, OrderItem.cost, Order.date, User.username,
-                                   Book.title).select_from(OrderItem). \
-        join(OrderItem.order).join(Book).join(User)
+    order_items = OrderItem.list()
     return render_template("crud/order_items-list.html", order_items=order_items)
 
 
@@ -124,20 +120,20 @@ def edit_order_item(id):
     if order_item is None:
         return "Позиция заказа не найдена"
     books = Book.query.all()
-    orders = db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
+    orders = Order.all_orders()
     return render_template("crud/edit-order_item.html", order_item=order_item, books=books, orders=orders)
 
 
 @crud.route('/create-order_item', methods=["GET"])
 def create_order_item():
-    orders = db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
-    books = db.session.query(Book.id, Book.title).all()
+    orders = Order.all_orders()
+    books = Book.get_all_titles()
     return render_template("crud/create-order_item.html", orders=orders, books=books)
 
 
 @crud.route('/users-list', methods=["GET"])
 def userslist():
-    users = User.query.all()
+    users = User.list()
     return render_template("crud/users-list.html", users=users)
 
 
