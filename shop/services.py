@@ -53,3 +53,19 @@ def login(data):
     else:
         return "Неверный пароль"
 
+
+def reg(data):
+    username = data['username']
+    password = data['password']
+    name = data['name']
+    surname = data['surname']
+    email = data['email']
+    patronymic = data['patronymic']
+    user = User(username=username, name=name, surname=surname, password=password, email=email, patronymic=patronymic)
+    try:
+        db.session.add(user)
+        db.session.commit()
+        login_user(user)
+        return redirect('/shop')
+    except:
+        return "чтото пошло не так"

@@ -28,6 +28,14 @@ def auth():
         return render_template("shop/auth.html")
 
 
+@shop.route('/registration', methods=['POST', 'GET'])
+def registration():
+    if request.method == "POST":
+        return reg(request.form)
+    else:
+        return render_template("shop/reg.html")
+
+
 @shop.route('/add_in_bag', methods=['POST'])
 def add_in_book():
     book_id = request.form['book_id']
@@ -74,3 +82,5 @@ def order_page(id):
 def book_page(slug):
     book = Book.info_for_page(slug)
     return render_template("shop/book-page.html", book=book)
+
+
