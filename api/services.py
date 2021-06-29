@@ -1,5 +1,5 @@
 from models import db, Book, Order, OrderItem, Author, Genre, Publisher, User
-from libs.util import sqla2dict
+from libs.util import sqla2dict, checkValues
 
 
 def get_book(id):
@@ -8,6 +8,9 @@ def get_book(id):
 
 
 def edit_book(id, data):
+    check = checkValues(data)
+    if check['result']:
+        return check
     book = Book.query.get(id)
     book.title = data['title']
     book.price = data['price']
@@ -69,6 +72,9 @@ def get_publishers():
 
 
 def edit_publisher(id, data):
+    check = checkValues(data)
+    if check['result']:
+        return check
     publisher = Publisher.query.get(id)
     publisher.publisher_name = data['publisher_name']
     try:
@@ -89,9 +95,9 @@ def del_publisher(id):
 
 
 def create_publisher(data):
-    publisher_name = data['publisher_name']
-    if publisher_name == '':
-        return {"result": 1, "error": "Название издателя не должно быть пустым"}
+    check = checkValues(data)
+    if check['result']:
+        return check
     else:
         publisher = Publisher(publisher_name=data['publisher_name'])
         try:
@@ -113,6 +119,9 @@ def get_users():
 
 
 def edit_user(id, data):
+    check = checkValues(data)
+    if check['result']:
+        return check
     user = User.query.get(id)
     user.username = data['username']
     user.patronymic = data['patronymic']
@@ -139,6 +148,9 @@ def del_user(id):
 
 
 def create_user(data):
+    check = checkValues(data)
+    if check['result']:
+        return check
     username = data['username']
     name = data['name']
     surname = data['surname']
@@ -169,6 +181,9 @@ def get_genres():
 
 
 def edit_genre(id, data):
+    check = checkValues(data)
+    if check['result']:
+        return check
     genre = Genre.query.get(id)
     genre.genre_name = data['genre_name']
     try:
@@ -192,6 +207,9 @@ def del_genre(id):
 
 
 def create_genre(data):
+    check = checkValues(data)
+    if check['result']:
+        return check
     genre = Genre(genre_name=data['genre_name'])
     for key, value in data.items():
         if value == "":
@@ -215,6 +233,9 @@ def get_authors():
 
 
 def edit_author(id, data):
+    name = data['name']
+    if name == '':
+        return {"result": 1, "error": "Имя автора не должно быть пустым"}
     author = Author.query.get(id)
     author.name = data['name']
     author.surname = data['surname']
@@ -260,6 +281,9 @@ def get_orders():
 
 
 def edit_order(id, data):
+    check = checkValues(data)
+    if check['result']:
+        return check
     order = Order.query.get(id)
     order.user_id = data['user_id']
     order.total = data['total']
@@ -282,9 +306,9 @@ def del_order(id):
 
 
 def create_order(data):
-    for key, value in data.items():
-        if value == "":
-            return {"result": 1, "error": "Поле " + key + " должно быть заполнено"}
+    check = checkValues(data)
+    if check['result']:
+        return check
     order = Order(user_id=data['user_id'], date=data['date'], total=data['total'])
     try:
         db.session.add(order)
@@ -305,6 +329,9 @@ def get_order_items():
 
 
 def edit_order_item(id, data):
+    check = checkValues(data)
+    if check['result']:
+        return check
     order_item = OrderItem.query.get(id)
     order_item.book_id = data['book_id']
     order_item.cost = float(data['cost'])
@@ -335,9 +362,9 @@ def del_order_item(id):
 
 
 def create_orderitems(data):
-    for key, value in data.items():
-        if value == "":
-            return {"result": 1, "error": "Поле " + key + " должно быть заполнено"}
+    check = checkValues(data)
+    if check['result']:
+        return check
     count = 0
     for item in data:
         order_item = OrderItem(order_id=int(item['order_id']), quantity=int(item['quantity']),
