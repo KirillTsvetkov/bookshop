@@ -31,8 +31,9 @@ function create(type){
                 $("#ajax-success").show()
             }
             else{
+                error = response.error
                 $("#ajax-success").hide()
-                $("#ajax-error").html("Чтото пошло не так");
+                $("#ajax-error").html(error);
                 $("#ajax-error").show()
             }
         }

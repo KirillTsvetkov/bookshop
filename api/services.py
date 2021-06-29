@@ -89,13 +89,17 @@ def del_publisher(id):
 
 
 def create_publisher(data):
-    publisher = Publisher(publisher_name=data['publisher_name'])
-    try:
-        db.session.add(publisher)
-        db.session.commit()
-        return {"result": 0, "msg": f"publisher {publisher} успешно добавлен"}
-    except:
-        return {"result": 1, "error": "ошибка добавления"}
+    publisher_name = data['publisher_name']
+    if publisher_name == '':
+        return {"result": 1, "error": "Название издателя не должно быть пустым"}
+    else:
+        publisher = Publisher(publisher_name=data['publisher_name'])
+        try:
+            db.session.add(publisher)
+            db.session.commit()
+            return {"result": 0, "msg": f"publisher {publisher} успешно добавлен"}
+        except:
+            return {"result": 1, "error": "ошибка добавления"}
 
 
 def get_user(id):
@@ -135,8 +139,17 @@ def del_user(id):
 
 
 def create_user(data):
-    user = User(username=data['username'], name=data['name'], surname=data['surname'],
-                patronymic=data['patronymic'], email=data['email'], password=data['password'])
+    username = data['username']
+    name = data['name']
+    surname = data['surname']
+    patronymic = data['patronymic']
+    email = data['email']
+    password = data['password']
+    for key, value in data.items():
+        if value == "":
+            return {"result": 1, "error": "Поле " + key + " должно быть заполнено"}
+    user = User(username=username, name=name, surname=surname,
+                patronymic=patronymic, email=email, password=password)
     try:
         db.session.add(user)
         db.session.commit()
@@ -180,6 +193,9 @@ def del_genre(id):
 
 def create_genre(data):
     genre = Genre(genre_name=data['genre_name'])
+    for key, value in data.items():
+        if value == "":
+            return {"result": 1, "error": "Поле " + key + " должно быть заполнено"}
     try:
         db.session.add(genre)
         db.session.commit()
@@ -221,6 +237,9 @@ def del_author(id):
 
 
 def create_author(data):
+    name = data['name']
+    if name == '':
+        return {"result": 1, "error": "Имя автора не должно быть пустым"}
     author = Author(name=data['name'], surname=data['surname'], patronymic=data['patronymic'])
     try:
         db.session.add(author)
@@ -263,6 +282,9 @@ def del_order(id):
 
 
 def create_order(data):
+    for key, value in data.items():
+        if value == "":
+            return {"result": 1, "error": "Поле " + key + " должно быть заполнено"}
     order = Order(user_id=data['user_id'], date=data['date'], total=data['total'])
     try:
         db.session.add(order)
@@ -313,6 +335,9 @@ def del_order_item(id):
 
 
 def create_orderitems(data):
+    for key, value in data.items():
+        if value == "":
+            return {"result": 1, "error": "Поле " + key + " должно быть заполнено"}
     count = 0
     for item in data:
         order_item = OrderItem(order_id=int(item['order_id']), quantity=int(item['quantity']),
