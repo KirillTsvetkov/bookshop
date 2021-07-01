@@ -24,7 +24,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for order_item in order_items %}
+        {% for order_item in order_items.items %}
         <tr>
             <th scope="row">{{ loop.index }}</th>
             <td>{{ order_item.username }}</td>
@@ -40,5 +40,13 @@
         {% endfor %}
         </tbody>
     </table>
+    {% for page in order_items.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+
+        {% if page %}
+          <a href="{{ url_for('crud.order_itemslist', page_num=page) }}">{{ page }}</a>
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
 </div>
 {% endblock %}

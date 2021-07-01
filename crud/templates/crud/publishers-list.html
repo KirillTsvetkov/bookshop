@@ -19,7 +19,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for publisher in publishers %}
+        {% for publisher in publishers.items %}
         <tr>
 
             <th scope="row">{{ loop.index }}</th>
@@ -30,5 +30,13 @@
         {% endfor %}
         </tbody>
     </table>
+    {% for page in publishers.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+
+        {% if page %}
+          <a href="{{ url_for('crud.publisherslist', page_num=page) }}">{{ page }}</a>
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
 </div>
 {% endblock %}

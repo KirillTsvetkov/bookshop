@@ -36,6 +36,10 @@ class Author(db.Model):
     surname = db.Column(db.String(40), nullable=True)
     patronymic = db.Column(db.String(40), nullable=True)
 
+    @classmethod
+    def list(cls, page_num):
+        return Author.query.paginate(per_page=5, page=page_num, error_out=True)
+
     def __repr__(self):
         return '<Author %r>' % self.name
 
@@ -48,8 +52,9 @@ class Order(db.Model):
     total = db.Column(db.Float, default=0)
 
     @classmethod
-    def list(cls):
-        return db.session.query(Order.id, Order.date, Order.total, User.username).join(User).all()
+    def list(cls, page_num):
+        return db.session.query(Order.id, Order.date, Order.total, User.username).join(User).\
+            paginate(per_page=5, page=page_num, error_out=True)
 
 
     @classmethod
@@ -80,10 +85,10 @@ class OrderItem(db.Model):
 
 
     @classmethod
-    def list(cls):
+    def list(cls, page_num):
         return db.session.query(OrderItem.id, OrderItem.quantity, OrderItem.cost, Order.date, User.username,
                          Book.title).select_from(OrderItem). \
-            join(OrderItem.order).join(Book).join(User)
+            join(OrderItem.order).join(Book).join(User).paginate(per_page=5, page=page_num, error_out=True)
 
 
     @classmethod
@@ -95,6 +100,11 @@ class Publisher(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     publisher_name = db.Column(db.String(100), nullable=False)
 
+    @classmethod
+    def list(cls, page_num):
+        return Publisher.query.paginate(per_page=5, page=page_num, error_out=True)
+
+
     def __repr__(self):
         return '<Publisher %r>' % self.publisher_name
 
@@ -105,6 +115,10 @@ class Genre(db.Model):
 
     def __repr__(self):
         return '<Genre %r>' % self.genre_name
+
+    @classmethod
+    def list(cls, page_num):
+        return Genre.query.paginate(per_page=5, page=page_num, error_out=True)
 
     @classmethod
     def get_all_genres(cls):
@@ -133,9 +147,10 @@ class Book(db.Model):
 
 
     @classmethod
-    def list(cls):
+    def list(cls, page_num):
         return db.session.query(Book.title, Book.id, Book.price, Author.name, Author.surname, Genre.genre_name,
-                         Publisher.publisher_name).join(Author).join(Genre).join(Publisher).all()
+                         Publisher.publisher_name).join(Author).join(Genre).join(Publisher).\
+            paginate(per_page=5, page=page_num, error_out=True)
 
     @classmethod
     def get_all_titles(cls):

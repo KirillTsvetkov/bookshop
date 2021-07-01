@@ -5,9 +5,9 @@ from .services import *
 crud = Blueprint('crud', __name__,template_folder='templates', static_folder='static')
 
 
-@crud.route('/genres-list', methods=["GET"])
-def genreslist():
-    genres = Genre.get_all_genres()
+@crud.route('/genres-list/<int:page_num>', methods=["GET"])
+def genreslist(page_num):
+    genres = Genre.list(page_num)
     return render_template("crud/genres-list.html", genres=genres)
 
 
@@ -23,9 +23,9 @@ def create_genre():
 
 
 
-@crud.route('/publishers-list', methods=["GET"])
-def publisherslist():
-    publishers = Publisher.query.all()
+@crud.route('/publishers-list/<int:page_num>', methods=["GET"])
+def publisherslist(page_num):
+    publishers = Publisher.list(page_num)
     return render_template("crud/publishers-list.html", publishers=publishers)
 
 
@@ -42,9 +42,9 @@ def edit_publisher(id):
     return render_template("crud/edit-publisher.html", publisher=publisher)
 
 
-@crud.route('/authors-list', methods=["GET"])
-def authorslist():
-    authors = Author.query.all()
+@crud.route('/authors-list/<int:page_num>', methods=["GET"])
+def authorslist(page_num):
+    authors = Author.list(page_num)
     return render_template("crud/authors-list.html", authors=authors)
 
 
@@ -61,9 +61,9 @@ def edit_author(id):
     return render_template("crud/edit-author.html", author=author)
 
 
-@crud.route('/books-list', methods=["GET"])
-def bookslist():
-    books = Book.list()
+@crud.route('/books-list/<int:page_num>', methods=["GET"])
+def bookslist(page_num):
+    books = Book.list(page_num)
     return render_template("crud/books-list.html", books=books)
 
 
@@ -87,9 +87,9 @@ def edit_book(id):
 
 
 
-@crud.route('/orders-list', methods=["GET"])
-def orderslist():
-    orders = Order.list()
+@crud.route('/orders-list/<int:page_num>', methods=["GET"])
+def orderslist(page_num):
+    orders = Order.list(page_num)
     return render_template("crud/orders-list.html", orders=orders)
 
 
@@ -108,9 +108,9 @@ def edit_order(id):
     return render_template("crud/edit-order.html", order=order, users=users)
 
 
-@crud.route('/order_items-list', methods=["GET"])
-def order_itemslist():
-    order_items = OrderItem.list()
+@crud.route('/order_items-list/<int:page_num>', methods=["GET"])
+def order_itemslist(page_num):
+    order_items = OrderItem.list(page_num)
     return render_template("crud/order_items-list.html", order_items=order_items)
 
 

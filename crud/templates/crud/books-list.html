@@ -24,7 +24,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for book in books %}
+        {% for book in books.items %}
         <tr>
             <th scope="row">{{ loop.index }}</th>
             <td>{{ book.title }}</td>
@@ -41,6 +41,14 @@
         {% endfor %}
         </tbody>
     </table>
+    {% for page in books.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+
+        {% if page %}
+          <a href="{{ url_for('crud.bookslist', page_num=page) }}">{{ page }}</a>
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
 </div>
 </div>
 {% endblock %}
