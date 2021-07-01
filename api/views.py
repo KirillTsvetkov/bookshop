@@ -63,7 +63,7 @@ def delete_user(id):
 @api.route('/user/<int:id>', methods=["PUT"])
 def update_user(id):
     data = request.get_json()
-    result = edit_book(id, data)
+    result = edit_user(id, data)
     return result
 
 

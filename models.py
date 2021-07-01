@@ -17,8 +17,8 @@ class User(db.Model, UserMixin):
 
 
     @classmethod
-    def list(cls):
-        return User.query.all()
+    def list(cls, page_num):
+        return User.query.paginate(per_page=5, page=page_num, error_out=True)
 
     @classmethod
     def get_by_username(cls, username):

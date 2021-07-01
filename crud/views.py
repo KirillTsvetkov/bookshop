@@ -131,9 +131,9 @@ def create_order_item():
     return render_template("crud/create-order_item.html", orders=orders, books=books)
 
 
-@crud.route('/users-list', methods=["GET"])
-def userslist():
-    users = User.list()
+@crud.route('/users-list/<int:page_num>', methods=["GET"])
+def userslist(page_num):
+    users = User.list(page_num)
     return render_template("crud/users-list.html", users=users)
 
 
