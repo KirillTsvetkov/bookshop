@@ -18,17 +18,25 @@
 
     </div>
     <div class="row">
-        {% for book in books %}
-        <div class="card text-center" style="width: 15rem; margin-right:10px">
-            <img class="card-img-top" src="..." alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title"><a href="/shop/book-page/{{ book.slug }}">{{ book.title }}</a></h5>
+        {% if books %}
+            {% if books[0].genre_name %}
+            <h3>{{ books[0].genre_name }}</h3>
+            {% endif %}
+            {% for book in books %}
+            <div class="card text-center" style="width: 15rem; margin-right:10px">
+                <img class="card-img-top" src="..." alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="/shop/book-page/{{ book.slug }}">{{ book.title }}</a></h5>
 
-                <p class="card-text text-center">{{ book.surname + " " + book.name}}</p>
-                <button class="btn btn-success" onclick="addbook({{ book.id }})">Купить</button>
+                    <p class="card-text text-center">{{ book.surname + " " + book.name}}</p>
+                    <button class="btn btn-success" onclick="addbook({{ book.id }})">Купить</button>
+                </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+        Книг не найдено
+        {% endif %}
     </div>
+
 </div>
 {% endblock %}

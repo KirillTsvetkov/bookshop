@@ -11,6 +11,13 @@ def genreslist(page_num):
     return render_template("crud/genres-list.html", genres=genres)
 
 
+@crud.route('/genres-search', methods=["GET"])
+def genres_search():
+    search = request.args.get('search')
+    genres = Genre.search(search)
+    return render_template("crud/genres-list.html", genres=genres)
+
+
 @crud.route('/edit-genre/<int:id>', methods=["GET"])
 def edit_genre(id):
     genre = Genre.query.get(id)

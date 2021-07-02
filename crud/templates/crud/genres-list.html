@@ -7,7 +7,18 @@
 {% block body %}
 {% include 'crud/crud-header.html' %}
 <div class="container mt-5">
-    <h1>Список жанров</h1>
+    <div class="row">
+        <div class="col-sm-8">
+            <h1>Список жанров</h1>
+        </div>
+        <div class="col-sm-4">
+            <form class="form-inline" method="GET" action="/crud/genres-search">
+                <input class="form-control col-8" type="text" name="search" id="search" placeholder="Найти..."
+                       aria-label="Search">
+                <button type="submit" class="btn btn-">Поиск</button>
+            </form>
+        </div>
+    </div>
     <a href="/crud/create-genre">Создать новый жанр</a>
     <br>
     <table class="table">
@@ -22,21 +33,23 @@
         <tbody>
         {% for genre in genres.items %}
         <tr>
-        <th scope="row">{{ loop.index }}</th>
+            <th scope="row">{{ loop.index }}</th>
 
-        <td>{{ genre.genre_name }}</td>
-        <td><a href="edit-genre/{{ genre.id }}">Изменить</a></td>
-        <td><button class="btn btn-danger" onclick="delete_post('genre',{{ genre.id }})">Удалить</button></td>
+            <td>{{ genre.genre_name }}</td>
+            <td><a href="edit-genre/{{ genre.id }}">Изменить</a></td>
+            <td>
+                <button class="btn btn-danger" onclick="delete_post('genre',{{ genre.id }})">Удалить</button>
+            </td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
     {% for page in genres.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
 
-        {% if page %}
-          <a href="{{ url_for('crud.genreslist', page_num=page) }}">{{ page }}</a>
-        {% else %}
-        {% endif %}
+    {% if page %}
+    <a href="{{ url_for('crud.genreslist', page_num=page) }}">{{ page }}</a>
+    {% else %}
+    {% endif %}
 
     {% endfor %}
 </div>

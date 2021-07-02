@@ -12,6 +12,12 @@ def home():
     return render_template("shop/home.html", books=books)
 
 
+@shop.route('/genre/<int:gener_id>', methods=["GET"])
+def genre_page(gener_id):
+    books = Book.get_all_books_genre(gener_id)
+    return render_template("shop/home.html", books=books)
+
+
 @shop.route('/search', methods=["GET"])
 def search():
     search = request.args.get('search')

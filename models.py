@@ -120,6 +120,12 @@ class Genre(db.Model):
     def list(cls, page_num):
         return Genre.query.paginate(per_page=5, page=page_num, error_out=True)
 
+
+    @classmethod
+    def search(cls, search):
+        return Genre.query.filter(Genre.genre_name.like('%'+search+'%')).paginate(per_page=5, page=0, error_out=False)
+
+
     @classmethod
     def get_all_genres(cls):
         return Genre.query.all()
@@ -152,6 +158,7 @@ class Book(db.Model):
                          Publisher.publisher_name).join(Author).join(Genre).join(Publisher).\
             paginate(per_page=5, page=page_num, error_out=True)
 
+
     @classmethod
     def get_all_titles(cls):
         return db.session.query(Book.id, Book.title).all()
@@ -179,5 +186,11 @@ class Book(db.Model):
 
     @classmethod
     def in_bag(cls, book_id):
-        return db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname).join(Author). \
+        return db.session.query(Book.id, Book.title, Book.price, Author.name, Author.surname, Genre.genre_name).join(Author). \
             filter(Book.id == book_id).first()
+
+
+    @classmethod
+    def get_all_books_genre(cls, gener_id):
+        return db.session.query(Book.id, Book.slug, Book.title, Book.price, Author.name, Author.surname).join(
+            Author).join(Genre).filter(Genre.id == gener_id).all()
