@@ -178,9 +178,9 @@ class Book(db.Model):
 
     @classmethod
     def info_for_page(cls, slug):
-        return db.session.query(Book.id, Book.title, Book.price, Book.year, Book.number_of_pages, Book.isbn,
-                         Book.annotation, Book.cover_type, \
-                         Author.name, Author.surname, Author.patronymic, Genre.genre_name) \
+        return db.session.query(Book.id.label("book_id"), Book.title, Book.price, Book.year, Book.number_of_pages, Book.isbn,
+                         Book.annotation, Book.cover_type,\
+                         Author.id.label("author_id"), Author.name, Author.surname, Author.patronymic, Genre.id.label("genre_id"), Genre.genre_name).select_from(Book)\
             .join(Author).join(Genre).filter(Book.slug == slug).first()
 
 

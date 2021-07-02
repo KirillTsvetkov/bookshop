@@ -10,11 +10,19 @@
     <h1>Список авторов</h1>
     <a href="/crud/create-author">Создать нового автора</a>
     <br>
-    {% for author in authors %}
-        {{ author.name + author.surname + author.patronymic }}
-        <a href="edit-author/{{ author.id }}">Изменить</a>
-        <button class="btn btn-danger" onclick="delete_post('author',{{ author.id }})">Удалить</button>
-        <br>
+    {% for author in authors.items %}
+    {{ author.name + author.surname + author.patronymic }}
+    <a href="edit-author/{{ author.id }}">Изменить</a>
+    <button class="btn btn-danger" onclick="delete_post('author',{{ author.id }})">Удалить</button>
+    <br>
+    {% endfor %}
+    {% for page in authors.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+
+    {% if page %}
+    <a href="{{ url_for('crud.userslist', page_num=page) }}">{{ page }}</a>
+    {% else %}
+    {% endif %}
+
     {% endfor %}
 </div>
 {% endblock %}

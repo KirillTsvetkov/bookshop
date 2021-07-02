@@ -18,8 +18,8 @@
         <div class="col-3">
             <ul>
                 <li>Год: {{book.year}}</li>
-                <li>Автор: {{ book.name + " " + book.surname + " " + book.patronymic}}</li>
-                <li>Жанр: {{ book.genre_name }}</li>
+                <li>Автор:<a href="/shop/author/{{ book.author_id }}">{{ book.name + " " + book.surname + " " + book.patronymic}}</a></li>
+                <li>Жанр: <a href="/shop/genre/{{ book.genre_id }}">{{ book.genre_name }}</a></li>
                 <li>Количество страниц: {{ book.number_of_pages }}</li>
                 <li>ISBN: {{ book.isbn }}</li>
                 <li>Тип обложки: {% if book.cover_type %}

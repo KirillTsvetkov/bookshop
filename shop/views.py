@@ -99,6 +99,7 @@ def order_page(id):
 @shop.route('/book-page/<slug>', methods=['GET'])
 def book_page(slug):
     book = Book.info_for_page(slug)
+    print(book)
     return render_template("shop/book-page.html", book=book)
 
 
