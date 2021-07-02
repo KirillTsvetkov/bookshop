@@ -194,3 +194,15 @@ class Book(db.Model):
     def get_all_books_genre(cls, gener_id):
         return db.session.query(Book.id, Book.slug, Book.title, Book.price, Author.name, Author.surname).join(
             Author).join(Genre).filter(Genre.id == gener_id).all()
+
+
+    @classmethod
+    def get_all_books_author(cls, author_id):
+        return db.session.query(Book.id, Book.slug, Book.title, Book.price, Author.name, Author.surname).join(
+            Author).filter(Author.id == author_id).all()
+
+
+    @classmethod
+    def get_all_books_publisher(cls, publisher_id):
+        return db.session.query(Book.id, Book.slug, Book.title, Book.price, Author.name, Author.surname).join(
+            Author).join(Publisher).filter(Publisher.id == publisher_id).all()

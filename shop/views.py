@@ -18,6 +18,18 @@ def genre_page(gener_id):
     return render_template("shop/home.html", books=books)
 
 
+@shop.route('/author/<int:author_id>', methods=["GET"])
+def author_page(author_id):
+    books = Book.get_all_books_author(author_id)
+    return render_template("shop/home.html", books=books)
+
+
+@shop.route('/publisher/<int:publisher_id>', methods=["GET"])
+def publisher_page(publisher_id):
+    books = Book.get_all_books_publisher(publisher_id)
+    return render_template("shop/home.html", books=books)
+
+
 @shop.route('/search', methods=["GET"])
 def search():
     search = request.args.get('search')
