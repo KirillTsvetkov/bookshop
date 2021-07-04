@@ -36,6 +36,12 @@ function create(type){
                 $("#ajax-error").html(error);
                 $("#ajax-error").show()
             }
+        },
+        error: function(e) {
+            error = e.responseJSON.error;
+            $("#ajax-success").hide()
+            $("#ajax-error").html(error);
+            $("#ajax-error").show()
         }
     });
 }

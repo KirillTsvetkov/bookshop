@@ -1,13 +1,17 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, make_response, jsonify
+from flask_expects_json import expects_json
+from jsonschema import ValidationError
+from .schemas import *
 from .services import *
 
 api = Blueprint('api', __name__)
-from app import csrf
 
-@api.route('/login', methods=["GET"])
-def login():
-    print(csrf.__dict__)
-    return "0"
+@api.errorhandler(400)
+def bad_request(error):
+    if isinstance(error.description, ValidationError):
+        original_error = error.description
+        return make_response(jsonify({'error': original_error.message}), 400)
+    return error
 
 
 @api.route('/book/<int:id>', methods=["GET"])
@@ -73,6 +77,7 @@ def update_user(id):
 
 
 @api.route('/publishers', methods=["GET", "POST"])
+@expects_json(publisher_schema, ignore_for=['GET'])
 def handle_publishers():
     if request.method == 'POST':
         if request.is_json:
