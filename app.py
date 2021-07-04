@@ -5,16 +5,23 @@ from flask_login import LoginManager
 from api.views import api
 from crud.views import crud
 from shop.views import shop
+from flask_wtf.csrf import CSRFProtect
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123@localhost/bookshop'
 app.config['SECRET_KEY'] = 'secret'
 app.config['JSON_AS_ASCII'] = False
+csrf = CSRFProtect(app)
+
 
 app.register_blueprint(api, url_prefix='/api')
 app.register_blueprint(crud, url_prefix='/crud')
 app.register_blueprint(shop, url_prefix='/shop')
+
+
+csrf.exempt(crud)
+csrf.exempt(api)
 
 
 db.init_app(app)

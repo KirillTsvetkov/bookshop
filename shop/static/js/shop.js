@@ -1,12 +1,12 @@
 function addbook(id){
-     $.ajax({
+    $.ajax({
             url:"/shop/add_in_bag",
             method:"POST",
             data:{book_id:id},
             success:function(response){
                 console.log(response)
             }
-     });
+    });
 }
 
 
@@ -83,3 +83,4 @@ $(document).ready(function(){
     })
     $('#js-total').text(total)
 })
+

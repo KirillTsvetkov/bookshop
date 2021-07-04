@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request, render_template, session, redirect
 from flask_login import login_required, logout_user, login_user, current_user
-
 from .services import *
 
 shop = Blueprint('shop', __name__, template_folder='templates', static_folder='static')
@@ -55,18 +54,21 @@ def registration():
 
 
 @shop.route('/add_in_bag', methods=['POST'])
-def add_in_book():
+def add_in_bag():
+    print(request.form)
     book_id = request.form['book_id']
     return add_item_in_card(book_id)
 
 
 @shop.route('/bag', methods=['GET'])
+@login_required
 def bag():
     books_in_bag = create_shop_card()
     return render_template("shop/bag.html", books_in_bag=books_in_bag)
 
 
 @shop.route('/order_from_bag', methods=['POST'])
+@login_required
 def order_from_bag():
     data = request.get_json()
     user_id = current_user.id
@@ -84,6 +86,7 @@ def logout():
 
 
 @shop.route('/old-orders', methods=['GET'])
+@login_required
 def old_orders():
     user_id = current_user.id
     orders = Order.old_orders(user_id)
@@ -91,6 +94,7 @@ def old_orders():
 
 
 @shop.route('/order-page/<int:id>', methods=['GET'])
+@login_required
 def order_page(id):
     order = Order.view_info(id)
     return render_template("shop/order-page.html", order=order)

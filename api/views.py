@@ -1,8 +1,13 @@
 from flask import Blueprint, jsonify, request
 from .services import *
 
-
 api = Blueprint('api', __name__)
+from app import csrf
+
+@api.route('/login', methods=["GET"])
+def login():
+    print(csrf.__dict__)
+    return "0"
 
 
 @api.route('/book/<int:id>', methods=["GET"])
