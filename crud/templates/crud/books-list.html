@@ -28,7 +28,7 @@
         <tr>
             <th scope="row">{{ loop.index }}</th>
             <td>{{ book.title }}</td>
-            <td>{{ book.name + " " + book.surname }}</td>
+            <td>{{ book.name}} {%if book.surname%} {{book.surname }} {% endif %}</td>
             <td>{{ book.genre_name }}</td>
             <td>{{ book.publisher_name }}</td>
             <td>{{ book.price }}</td>

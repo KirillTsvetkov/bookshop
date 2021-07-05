@@ -84,7 +84,8 @@ user_schema = {
                        "pattern": "^[^0-9]+$"
                        },
         "email": {"type": "string",
-                  "format": "email"},
+                  "pattern": "[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                  },
         "password": {"type": "string",
                      "minLength": 3,
                      "maxLength": 25
@@ -99,11 +100,14 @@ book_schema = {
         "title": {"type": "string",
                   "minLength": 1,
                   "maxLength": 60},
-        "price": {"type": "number"},
-        "number_of_pages": {"type": "number"},
-        "year": {"type": "number"},
+        "price": {"type": ["string", "number"],
+                  "pattern": "^[0-9]*$"},
+        "number_of_pages": {"type": ["string", "number"],
+                            "pattern": "^[0-9]*$"},
+        "year": {"type": ["string", "number"],
+                 "pattern": "^[0-9]*$"},
         "isbn": {"type": "string"},
-        "cover_type": {"type": "bool"},
+        "cover_type": {"type": ["string", "boolean"]},
         "annotation": {"type": "string",
                        "minLength": 10,
                        "maxLength": 500
@@ -112,9 +116,12 @@ book_schema = {
                  "minLength": 2,
                  "maxLength": 30
                  },
-        "genre_id": {"type": "number"},
-        "publisher_id": {"type": "number"},
-        "author_id": {"type": "number"}
+        "genre_id": {"type": ["string", "number"],
+                     "pattern": "^[0-9]*$"},
+        "publisher_id": {"type": ["string", "number"],
+                         "pattern": "^[0-9]*$"},
+        "author_id": {"type": ["string", "number"],
+                      "pattern": "^[0-9]*$"}
     },
     "required": ["title", "price", "number_of_pages", "year", "isbn", "cover_type", "annotation", "slug", "genre_id",
                  "publisher_id", "author_id"]

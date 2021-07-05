@@ -23,7 +23,7 @@
         <lable for="author_id">Выберите автора</lable>
         <select name="author_id" id="author_id" class="form-control">
             {% for author in authors %}
-                <option value="{{author.id}}">{{ author.name + " "+ author.surname}}</option>
+                <option value="{{author.id}}">{{ author.name }} {% if author.surname %} {{ author.surname}} {% endif %}</option>
             {% endfor %}
         </select>
         <br>
@@ -36,8 +36,8 @@
         <br>
         <lable for="cover_type">Выберите тип обложки</lable>
         <select name="cover_type" id="cover_type" class="form-control">
-            <option value="1">Твердая</option>
-            <option value="">Мягкая</option>
+            <option value=true>Твердая</option>
+            <option value=false>Мягкая</option>
         </select>
         <br>
         <lable for="year">Год</lable>

@@ -8,9 +8,6 @@ def get_book(id):
 
 
 def edit_book(id, data):
-    check = checkValues(data)
-    if check['result']:
-        return check
     book = Book.query.get(id)
     book.title = data['title']
     book.price = data['price']
@@ -27,8 +24,8 @@ def edit_book(id, data):
         db.session.commit()
         book = Book.query.get(id)
         return {"result": 0, "book": sqla2dict(book)}
-    except:
-        return {"result": 1}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def get_books():
@@ -58,8 +55,8 @@ def create_book(data):
         db.session.add(book)
         db.session.commit()
         return {"result": 0, "msg": f"book {book} успешно добавлен"}
-    except:
-        return {"result": 1, "error": "ошибка добавления"}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def get_publisher(id):
@@ -80,8 +77,8 @@ def edit_publisher(id, data):
     try:
         db.session.commit()
         return {"result": 0}
-    except:
-        return {"result": 1}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def del_publisher(id):
@@ -104,8 +101,8 @@ def create_publisher(data):
             db.session.add(publisher)
             db.session.commit()
             return {"result": 0, "msg": f"publisher {publisher} успешно добавлен"}
-        except:
-            return {"result": 1, "error": "ошибка добавления"}
+        except Exception as error:
+            return {"result": 1, "error": str(error.orig)}
 
 
 def get_user(id):
@@ -133,8 +130,8 @@ def edit_user(id, data):
         db.session.commit()
         user = User.query.get(id)
         return {"result": 0, "user": sqla2dict(user)}
-    except:
-        return {"result": 1}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def del_user(id):
@@ -166,8 +163,8 @@ def create_user(data):
         db.session.add(user)
         db.session.commit()
         return {"result": 0, "msg": f"user {user} успешно добавлен"}
-    except:
-        return {"result": 1, "error": "ошибка добавления"}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def get_genre(id):
@@ -192,8 +189,8 @@ def edit_genre(id, data):
             "genre_name": genre.genre_name
         }
         return {"result": 0, "genre": results}
-    except:
-        return {"result": 1}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def del_genre(id):
@@ -218,8 +215,8 @@ def create_genre(data):
         db.session.add(genre)
         db.session.commit()
         return {"result": 0, "msg": f"genre {genre} успешно добавлен"}
-    except:
-        return {"result": 1, "error": "ошибка добавления"}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def get_author(id):
@@ -243,8 +240,8 @@ def edit_author(id, data):
     try:
         db.session.commit()
         return {"result": 0}
-    except:
-        return {"result": 1}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def del_author(id):
@@ -258,7 +255,6 @@ def del_author(id):
 
 
 def create_author(data):
-
     name = data['name']
     surname = data.get('surname', None)
     patronymic = data.get('patronymic', None)
@@ -267,8 +263,8 @@ def create_author(data):
         db.session.add(author)
         db.session.commit()
         return {"result": 0, "msg": f"author {author} успешно добавлен"}
-    except:
-        return {"result": 1, "error": "ошибка добавления"}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def get_order(id):
@@ -292,8 +288,8 @@ def edit_order(id, data):
     try:
         db.session.commit()
         return {"result": 0}
-    except:
-        return {"result": 1}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def del_order(id):
@@ -315,8 +311,8 @@ def create_order(data):
         db.session.add(order)
         db.session.commit()
         return {"result": 0, "msg": f"order {order} успешно добавлен"}
-    except:
-        return {"result": 1, "error": "ошибка добавления"}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def get_order_item(id):
@@ -330,9 +326,6 @@ def get_order_items():
 
 
 def edit_order_item(id, data):
-    check = checkValues(data)
-    if check['result']:
-        return check
     order_item = OrderItem.query.get(id)
     order_item.book_id = data['book_id']
     order_item.cost = float(data['cost'])
@@ -348,8 +341,8 @@ def edit_order_item(id, data):
         order.total = sum
         db.session.commit()
         return {"result": 0}
-    except:
-        return {"result": 1}
+    except Exception as error:
+        return {"result": 1, "error": str(error.orig)}
 
 
 def del_order_item(id):
@@ -363,9 +356,6 @@ def del_order_item(id):
 
 
 def create_orderitems(data):
-    check = checkValues(data)
-    if check['result']:
-        return check
     count = 0
     for item in data:
         order_item = OrderItem(order_id=int(item['order_id']), quantity=int(item['quantity']),
@@ -377,7 +367,7 @@ def create_orderitems(data):
             order.total += order_item.cost
             db.session.commit()
             count = count + 1
-        except:
-            return {"result": 1, "error": "ошибка добавления"}
+        except Exception as error:
+            return {"result": 1, "error": str(error.orig)}
     if (count == len(data)):
         return {"result": 0, "msg": 'Добавленно "+str(count)+" Записей"'}
