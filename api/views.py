@@ -33,6 +33,7 @@ def update_book(id):
 
 
 @api.route('/books', methods=["GET", "POST"])
+@expects_json(book_schema, ignore_for=['GET'])
 def handle_books():
     if request.method == 'POST':
         if request.is_json:
@@ -52,6 +53,7 @@ def user(id):
 
 
 @api.route('/users', methods=["GET", "POST"])
+@expects_json(user_schema, ignore_for=['GET'])
 def handle_users():
     if request.method == 'POST':
         if request.is_json:
@@ -109,6 +111,7 @@ def publisher(id):
 
 
 @api.route('/authors', methods=["GET", "POST"])
+@expects_json(author_schema, ignore_for=['GET'])
 def handle_authors():
     if request.method == 'POST':
         if request.is_json:
@@ -140,6 +143,7 @@ def author(id):
 
 
 @api.route('/orders', methods=["GET", "POST"])
+@expects_json(order_schema, ignore_for=['GET'])
 def handle_orders():
     if request.method == 'POST':
         if request.is_json:
@@ -171,6 +175,7 @@ def order(id):
 
 
 @api.route('/order_items', methods=["GET", "POST"])
+@expects_json(order_item_schema, ignore_for=['GET'])
 def handle_order_items():
     if request.method == 'POST':
         if request.is_json:
@@ -202,6 +207,7 @@ def update_order_item(id):
 
 
 @api.route('/genres', methods=["GET", "POST"])
+@expects_json(genre_schema, ignore_for=['GET'])
 def handle_genres():
     if request.method == 'POST':
         if request.is_json:

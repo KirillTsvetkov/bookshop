@@ -258,10 +258,11 @@ def del_author(id):
 
 
 def create_author(data):
+
     name = data['name']
-    if name == '':
-        return {"result": 1, "error": "Имя автора не должно быть пустым"}
-    author = Author(name=data['name'], surname=data['surname'], patronymic=data['patronymic'])
+    surname = data.get('surname', None)
+    patronymic = data.get('patronymic', None)
+    author = Author(name=name, surname=surname, patronymic=patronymic)
     try:
         db.session.add(author)
         db.session.commit()
