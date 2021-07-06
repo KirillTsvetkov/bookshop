@@ -44,7 +44,7 @@ author_schema = {
 order_schema = {
     "type": "object",
     "properties": {
-        "user_id": {"type": "number"},
+        "user_id": {"type":["number","string"]},
         "total": {"type": "number"},
         "date": {"type": "string",
                  "format": "date"
@@ -54,6 +54,17 @@ order_schema = {
 }
 
 order_item_schema = {
+    "type": "array",
+    "properties": {
+        "order_id": {"type": "number"},
+        "quantity": {"type": "number"},
+        "cost": {"type": "number"},
+        "book_id": {"type": "number"}
+    },
+    "required": ["order_id", "quantity", "cost", "book_id"]
+}
+
+edit_order_item_schema = {
     "type": "object",
     "properties": {
         "order_id": {"type": "number"},

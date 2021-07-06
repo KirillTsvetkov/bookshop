@@ -36,7 +36,7 @@
             <th scope="row">{{ loop.index }}</th>
 
             <td>{{ genre.genre_name }}</td>
-            <td><a href="edit-genre/{{ genre.id }}">Изменить</a></td>
+            <td><a href="/crud/edit-genre/{{ genre.id }}">Изменить</a></td>
             <td>
                 <button class="btn btn-danger" onclick="delete_post('genre',{{ genre.id }})">Удалить</button>
             </td>

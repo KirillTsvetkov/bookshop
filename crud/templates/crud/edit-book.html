@@ -16,21 +16,21 @@
         <input type="number" name="price" id="price" class="form-control" value="{{ book.price }}">
         <br>
         <lable for="author_id">Автор</lable>
-        <select name="author_id" id="author_id" value="book.author_id">
+        <select name="author_id" class="form-control" id="author_id" value="book.author_id">
             {% for author in authors %}
             <option value="{{ author.id }}">{{ author.surname + " " + author.name + " " + author.patronymic}}</option>
             {% endfor %}
         </select>
         <br>
         <lable for="genre_id">Жанр</lable>
-        <select name="genre_id" id="genre_id" value="{{ book.genre_id }}">
+        <select name="genre_id" class="form-control" id="genre_id" value="{{ book.genre_id }}">
             {% for genre in genres %}
             <option value="{{ genre.id }}">{{ genre.genre_name }}</option>
             {% endfor %}
         </select>
         <br>
         <lable for="publisher_id">Издатель</lable>
-        <select name="publisher_id" id="publisher_id" value="{{ book.publisher_id }}">
+        <select name="publisher_id" class="form-control" id="publisher_id" value="{{ book.publisher_id }}">
             {% for publisher in publishers %}
             <option value="{{ publisher.id }}">{{ publisher.publisher_name }}</option>
             {% endfor %}

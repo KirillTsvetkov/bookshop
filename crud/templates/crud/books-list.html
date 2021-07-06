@@ -32,11 +32,10 @@
             <td>{{ book.genre_name }}</td>
             <td>{{ book.publisher_name }}</td>
             <td>{{ book.price }}</td>
-            <td><a href="edit-book/{{ book.id }}">Изменить</a></td>
+            <td><a href="/crud/edit-book/{{ book.id }}">Изменить</a></td>
             <td>
                 <button class="btn btn-danger" onclick="delete_post('book',{{ book.id }})">Удалить</button>
             </td>
-            <br>
         </tr>
         {% endfor %}
         </tbody>

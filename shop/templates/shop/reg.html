@@ -8,6 +8,8 @@
 <div class="container mt-5">
     <h1>Регистраия</h1>
     <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
         <lable for="username">Логин</lable>
         <input type="text" name="username" id="username" class="form-control" placeholder="Введите логин">
         <br>

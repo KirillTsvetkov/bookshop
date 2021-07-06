@@ -28,7 +28,7 @@
             <td>{{ order.username }}</td>
             <td>{{ order.date.strftime('%Y-%m-%d') }}</td>
             <td>{{"%.2f р"|format(order.total) }}</td>
-            <td><a href="edit-order/{{ order.id }}">Изменить</a></td>
+            <td><a href="/crud/edit-order/{{ order.id }}">Изменить</a></td>
             <td>
                 <button class="btn btn-danger" onclick="delete_post('order',{{ order.id }})">Удалить</button>
             </td>

@@ -32,7 +32,7 @@
             <td>{{ order_item.title }}</td>
             <td>{{ order_item.quantity }}</td>
             <td>{{ "Цена: " + "%.2f р"|format(order_item.cost) }}</td>
-            <td><a href="edit-order_item/{{ order_item.id }}">Изменить</a></td>
+            <td><a href="/crud/edit-order_item/{{ order_item.id }}">Изменить</a></td>
             <td>
                 <button class="btn btn-danger" onclick="delete_post('order_item',{{ order_item.id }})">Удалить</button>
             </td>

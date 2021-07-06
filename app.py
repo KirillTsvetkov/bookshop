@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from models import db, User
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -38,7 +38,7 @@ def load_user(user_id):
 
 @app.route('/', methods=["GET"])
 def index():
-    return "Главная"
+    return render_template("index.html")
 
 
 if __name__ == "__main__":

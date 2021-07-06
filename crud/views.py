@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, render_template
 from models import db, Book, Order, OrderItem, Author, Genre, Publisher, User
+from flask_login import login_required
 from .services import *
 
 crud = Blueprint('crud', __name__,template_folder='templates', static_folder='static')
@@ -42,6 +43,7 @@ def create_publisher():
 
 
 @crud.route('/edit-publisher/<int:id>', methods=["GET"])
+@login_required
 def edit_publisher(id):
     publisher = Publisher.query.get(id)
     if publisher is None:

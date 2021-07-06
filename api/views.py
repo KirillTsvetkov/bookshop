@@ -3,6 +3,7 @@ from flask_expects_json import expects_json
 from jsonschema import ValidationError
 from .schemas import *
 from .services import *
+from flask_login import current_user, login_required, logout_user
 
 api = Blueprint('api', __name__)
 
@@ -14,6 +15,23 @@ def bad_request(error):
     return error
 
 
+@api.route('/auth', methods=['POST', 'GET'])
+def auth():
+    if request.method == 'POST':
+        data = request.get_json()
+        return login(data)
+    else:
+        return current_user.username
+
+
+@api.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return {"result": 0, "msg": "Вы вышли"}
+
+
+
 @api.route('/book/<int:id>', methods=["GET"])
 def book(id):
     result = get_book(id)
@@ -21,11 +39,13 @@ def book(id):
 
 
 @api.route('/book/<int:id>', methods=["DELETE"])
+@login_required
 def delete_book(id):
     return del_book(id)
 
 
 @api.route('/book/<int:id>', methods=["PUT"])
+@login_required
 def update_book(id):
     data = request.get_json()
     result = edit_book(id, data)
@@ -34,6 +54,7 @@ def update_book(id):
 
 @api.route('/books', methods=["GET", "POST"])
 @expects_json(book_schema, ignore_for=['GET'])
+@login_required
 def handle_books():
     if request.method == 'POST':
         if request.is_json:
@@ -42,6 +63,7 @@ def handle_books():
         else:
             return {"result": 1, "error": "The request payload is not in JSON format"}
     else:
+        print(current_user)
         result = get_books()
         return jsonify({'result': result})
 
@@ -67,11 +89,13 @@ def handle_users():
 
 
 @api.route('/user/<int:id>', methods=["DELETE"])
+@login_required
 def delete_user(id):
     return del_user(id)
 
 
 @api.route('/user/<int:id>', methods=["PUT"])
+@login_required
 def update_user(id):
     data = request.get_json()
     result = edit_user(id, data)
@@ -93,11 +117,13 @@ def handle_publishers():
 
 
 @api.route('/publisher/<int:id>', methods=["DELETE"])
+@login_required
 def delete_publisher(id):
     return del_publisher(id)
 
 
 @api.route('/publisher/<int:id>', methods=["PUT"])
+@login_required
 def update_publisher(id):
     data = request.get_json()
     result = edit_publisher(id, data)
@@ -125,11 +151,13 @@ def handle_authors():
 
 
 @api.route('/author/<int:id>', methods=["DELETE"])
+@login_required
 def delete_author(id):
     return del_author(id)
 
 
 @api.route('/author/<int:id>', methods=["PUT"])
+@login_required
 def update_author(id):
     data = request.get_json()
     result = edit_author(id, data)
@@ -157,11 +185,14 @@ def handle_orders():
 
 
 @api.route('/order/<int:id>', methods=["DELETE"])
+@login_required
 def delete_order(id):
     return del_order(id)
 
 
 @api.route('/order/<int:id>', methods=["PUT"])
+@login_required
+@expects_json(order_schema)
 def update_order(id):
     data = request.get_json()
     result = edit_order(id, data)
@@ -195,11 +226,14 @@ def order_item(id):
 
 
 @api.route('/order_item/<int:id>', methods=["DELETE"])
+@login_required
 def delete_order_item(id):
     return del_order_item(id)
 
 
 @api.route('/order_item/<int:id>', methods=["PUT"])
+@login_required
+@expects_json(edit_order_item_schema)
 def update_order_item(id):
     data = request.get_json()
     result = edit_order_item(id, data)
@@ -210,17 +244,22 @@ def update_order_item(id):
 @expects_json(genre_schema, ignore_for=['GET'])
 def handle_genres():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            return create_genre(data)
+        if current_user.is_authenticated:
+            if request.is_json:
+                data = request.get_json()
+                return create_genre(data)
+            else:
+                return {"result": 1, "error": "The request payload is not in JSON format"}
         else:
-            return {"result": 1, "error": "The request payload is not in JSON format"}
+            return {"result": 1, "error": "Вы не авторизованы"}
     else:
         result = get_genres()
         return jsonify({'result': result})
 
 
 @api.route('/genre/<int:id>', methods=["PUT"])
+@login_required
+@expects_json(genre_schema)
 def update_genre(id):
     data = request.get_json()
     result = edit_genre(id, data)
@@ -228,11 +267,13 @@ def update_genre(id):
 
 
 @api.route('/genre/<int:id>', methods=["GET"])
+@login_required
 def genre(id):
     result = get_genre(id)
     return jsonify({'result': result})
 
 
 @api.route('/genre/<int:id>', methods=["DELETE"])
+@login_required
 def delete_genre(id):
     return del_genre(id)

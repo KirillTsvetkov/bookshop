@@ -24,7 +24,7 @@
 
             <th scope="row">{{ loop.index }}</th>
             <td>{{ publisher.publisher_name }}</td>
-            <td><a href="edit-publisher/{{ publisher.id }}">Изменить</a></td>
+            <td><a href="/crud/edit-publisher/{{ publisher.id }}">Изменить</a></td>
             <td><button class="btn btn-danger" onclick="delete_post('publisher',{{ publisher.id }}, event)">Удалить</button></td>
         </tr>
         {% endfor %}

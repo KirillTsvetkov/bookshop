@@ -1,14 +1,33 @@
 from models import db, Book, Order, OrderItem, Author, Genre, Publisher, User
 from libs.util import sqla2dict, checkValues
+from flask_login import login_user
+from flask import redirect
+
+
+def login(data):
+    username = data['username']
+    password = data['password']
+    user = User.get_by_username(username)
+    if user is None:
+        return {"result": 1, "error": "Неверный логин"}
+    if user.password == password:
+        login_user(user)
+        return {"result": 0, "error": "Вы авторизованы"}
+    else:
+        return {"result": 1, "error": "Неверный пароль"}
+
 
 
 def get_book(id):
     book = Book.query.get(id)
+    if book is None:
+        return {"result": 1, "error": "Запись не существует"}
     return sqla2dict(book)
 
 
 def edit_book(id, data):
     book = Book.query.get(id)
+
     book.title = data['title']
     book.price = data['price']
     book.number_of_pages = data['number_of_pages']
@@ -35,6 +54,8 @@ def get_books():
 
 def del_book(id):
     book = Book.query.get(id)
+    if book is None:
+        return {"result": 1, "error": "Запись не существует"}
     try:
         db.session.delete(book)
         db.session.commit()
@@ -61,6 +82,8 @@ def create_book(data):
 
 def get_publisher(id):
     publisher = Publisher.query.get(id)
+    if publisher is None:
+        return {"result": 1, "error": "Запись не существует"}
     return sqla2dict(publisher)
 
 def get_publishers():
@@ -83,6 +106,8 @@ def edit_publisher(id, data):
 
 def del_publisher(id):
     publisher = Publisher.query.get(id)
+    if publisher is None:
+        return {"result": 1, "error": "Запись не существует"}
     try:
         db.session.delete(publisher)
         db.session.commit()
@@ -107,6 +132,8 @@ def create_publisher(data):
 
 def get_user(id):
     user = User.query.get(id)
+    if user is None:
+        return {"result": 1, "error": "Запись не существует"}
     return sqla2dict(user)
 
 
@@ -136,6 +163,8 @@ def edit_user(id, data):
 
 def del_user(id):
     user = User.query.get(id)
+    if user is None:
+        return {"result": 1, "error": "Запись не существует"}
     try:
         db.session.delete(user)
         db.session.commit()
@@ -169,6 +198,8 @@ def create_user(data):
 
 def get_genre(id):
     genre = Genre.query.get(id)
+    if genre is None:
+        return {"result": 1, "error": "Запись не существует"}
     return sqla2dict(genre)
 
 
@@ -178,10 +209,9 @@ def get_genres():
 
 
 def edit_genre(id, data):
-    check = checkValues(data)
-    if check['result']:
-        return check
     genre = Genre.query.get(id)
+    if genre is None:
+        return {"result": 1, "error": "Запись не существует"}
     genre.genre_name = data['genre_name']
     try:
         db.session.commit()
@@ -195,6 +225,8 @@ def edit_genre(id, data):
 
 def del_genre(id):
     genre = Genre.query.get(id)
+    if genre is None:
+        return {"result": 1, "error": "Запись не существует"}
     try:
         db.session.delete(genre)
         db.session.commit()
@@ -204,13 +236,7 @@ def del_genre(id):
 
 
 def create_genre(data):
-    check = checkValues(data)
-    if check['result']:
-        return check
     genre = Genre(genre_name=data['genre_name'])
-    for key, value in data.items():
-        if value == "":
-            return {"result": 1, "error": "Поле " + key + " должно быть заполнено"}
     try:
         db.session.add(genre)
         db.session.commit()
@@ -221,6 +247,8 @@ def create_genre(data):
 
 def get_author(id):
     author = Author.query.get(id)
+    if author is None:
+        return {"result": 1, "error": "Запись не существует"}
     return sqla2dict(author)
 
 
@@ -230,9 +258,6 @@ def get_authors():
 
 
 def edit_author(id, data):
-    name = data['name']
-    if name == '':
-        return {"result": 1, "error": "Имя автора не должно быть пустым"}
     author = Author.query.get(id)
     author.name = data['name']
     author.surname = data['surname']
@@ -246,6 +271,8 @@ def edit_author(id, data):
 
 def del_author(id):
     author = Author.query.get(id)
+    if author is None:
+        return {"result": 1, "error": "Запись не существует"}
     try:
         db.session.delete(author)
         db.session.commit()
@@ -269,6 +296,8 @@ def create_author(data):
 
 def get_order(id):
     order = Order.query.get(id)
+    if order is None:
+        return {"result": 1, "error": "Запись не существует"}
     return sqla2dict(order)
 
 
@@ -294,6 +323,8 @@ def edit_order(id, data):
 
 def del_order(id):
     order = Order.query.get(id)
+    if order is None:
+        return {"result": 1, "error": "Запись не существует"}
     try:
         db.session.delete(order)
         db.session.commit()
@@ -303,9 +334,6 @@ def del_order(id):
 
 
 def create_order(data):
-    check = checkValues(data)
-    if check['result']:
-        return check
     order = Order(user_id=data['user_id'], date=data['date'], total=data['total'])
     try:
         db.session.add(order)
@@ -316,8 +344,10 @@ def create_order(data):
 
 
 def get_order_item(id):
-    order = OrderItem.query.get(id)
-    return sqla2dict(order)
+    order_item = OrderItem.query.get(id)
+    if order_item is None:
+        return {"result": 1, "error": "Запись не существует"}
+    return sqla2dict(order_item)
 
 
 def get_order_items():
@@ -327,10 +357,10 @@ def get_order_items():
 
 def edit_order_item(id, data):
     order_item = OrderItem.query.get(id)
-    order_item.book_id = data['book_id']
+    order_item.book_id = int(data['book_id'])
     order_item.cost = float(data['cost'])
-    order_item.order_id = data['order_id']
-    order_item.quantity = data['quantity']
+    order_item.order_id = int(data['order_id'])
+    order_item.quantity = int(data['quantity'])
     order = order_item.order
     try:
         db.session.commit()
@@ -347,6 +377,8 @@ def edit_order_item(id, data):
 
 def del_order_item(id):
     order_item = OrderItem.query.get(id)
+    if order_item is None:
+        return {"result": 1, "error": "Запись не существует"}
     try:
         db.session.delete(order_item)
         db.session.commit()
@@ -370,4 +402,4 @@ def create_orderitems(data):
         except Exception as error:
             return {"result": 1, "error": str(error.orig)}
     if (count == len(data)):
-        return {"result": 0, "msg": 'Добавленно "+str(count)+" Записей"'}
+        return {"result": 0, "msg": 'Добавленно '+str(count)+' Записей'}

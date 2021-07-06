@@ -9,19 +9,39 @@
 <div class="container mt-5">
     <h1>Список авторов</h1>
     <a href="/crud/create-author">Создать нового автора</a>
-    <br>
-    {% for author in authors.items %}
-        {{ author.name }}
-        {% if author.surname %}
-            {{ author.surname }}
-        {% endif %}
-        {% if author.patronymic %}
-            {{ author.patronymic }}
-        {% endif %}
-    <a href="/crud/edit-author/{{ author.id }}">Изменить</a>
-    <button class="btn btn-danger" onclick="delete_post('author',{{ author.id }})">Удалить</button>
-    <br>
-    {% endfor %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Имя</th>
+            <th scope="col">Фамилия</th>
+            <th scope="col">Отчество</th>
+            <th scope="col">Изменить</th>
+            <th scope="col">Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for author in authors.items %}
+        <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ author.name }}</td>
+            <td>{% if author.surname %}
+                {{ author.surname }}
+                {% endif %}
+            </td>
+            <td>{% if author.patronymic %}
+                {{ author.patronymic }}
+                {% endif %}
+            </td>
+            <td><a href="/crud/edit-author/{{ author.id }}">Изменить</a></td>
+            <td>
+                <button class="btn btn-danger" onclick="delete_post('author',{{ author.id }})">Удалить</button>
+            </td>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
     {% for page in authors.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
 
     {% if page %}
