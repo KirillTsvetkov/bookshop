@@ -57,11 +57,14 @@ def update_book(id):
 @login_required
 def handle_books():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            return create_book(data)
+        if current_user.is_authenticated:
+            if request.is_json:
+                data = request.get_json()
+                return create_book(data)
+            else:
+                return {"result": 1, "error": "The request payload is not in JSON format"}
         else:
-            return {"result": 1, "error": "The request payload is not in JSON format"}
+            return {"result": 1, "error": "Вы не авторизованы"}
     else:
         print(current_user)
         result = get_books()
@@ -76,13 +79,17 @@ def user(id):
 
 @api.route('/users', methods=["GET", "POST"])
 @expects_json(user_schema, ignore_for=['GET'])
+@login_required
 def handle_users():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            return create_user(data)
+        if current_user.is_authenticated:
+            if request.is_json:
+                data = request.get_json()
+                return create_user(data)
+            else:
+                return {"error": "The request payload is not in JSON format"}
         else:
-            return {"error": "The request payload is not in JSON format"}
+            return {"result": 1, "error": "Вы не авторизованы"}
     else:
         result = get_users()
         return jsonify({'result': result})
@@ -104,13 +111,17 @@ def update_user(id):
 
 @api.route('/publishers', methods=["GET", "POST"])
 @expects_json(publisher_schema, ignore_for=['GET'])
+@login_required
 def handle_publishers():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            return create_publisher(data)
+        if current_user.is_authenticated:
+            if request.is_json:
+                data = request.get_json()
+                return create_publisher(data)
+            else:
+                return {"error": "The request payload is not in JSON format"}
         else:
-            return {"error": "The request payload is not in JSON format"}
+            return {"result": 1, "error": "Вы не авторизованы"}
     else:
         result = get_publishers()
         return jsonify({'result': result})
@@ -138,13 +149,17 @@ def publisher(id):
 
 @api.route('/authors', methods=["GET", "POST"])
 @expects_json(author_schema, ignore_for=['GET'])
+@login_required
 def handle_authors():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            return create_author(data)
+        if current_user.is_authenticated:
+            if request.is_json:
+                data = request.get_json()
+                return create_author(data)
+            else:
+                return {"error": "The request payload is not in JSON format"}
         else:
-            return {"error": "The request payload is not in JSON format"}
+            return {"result": 1, "error": "Вы не авторизованы"}
     else:
         result = get_authors()
         return jsonify({'result': result})
@@ -172,13 +187,17 @@ def author(id):
 
 @api.route('/orders', methods=["GET", "POST"])
 @expects_json(order_schema, ignore_for=['GET'])
+@login_required
 def handle_orders():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            return create_order(data)
+        if current_user.is_authenticated:
+            if request.is_json:
+                data = request.get_json()
+                return create_order(data)
+            else:
+                return {"error": "The request payload is not in JSON format"}
         else:
-            return {"error": "The request payload is not in JSON format"}
+            return {"result": 1, "error": "Вы не авторизованы"}
     else:
         result = get_orders()
         return jsonify({'result': result})
@@ -207,13 +226,17 @@ def order(id):
 
 @api.route('/order_items', methods=["GET", "POST"])
 @expects_json(order_item_schema, ignore_for=['GET'])
+@login_required
 def handle_order_items():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            return create_orderitems(data)
+        if current_user.is_authenticated:
+            if request.is_json:
+                data = request.get_json()
+                return create_orderitems(data)
+            else:
+                return {"result": 1, "error": "The request payload is not in JSON format"}
         else:
-            return {"result": 1, "error": "The request payload is not in JSON format"}
+            return {"result": 1, "error": "Вы не авторизованы"}
     else:
         result = get_order_items()
         return jsonify({'result': result})
@@ -242,6 +265,7 @@ def update_order_item(id):
 
 @api.route('/genres', methods=["GET", "POST"])
 @expects_json(genre_schema, ignore_for=['GET'])
+@login_required
 def handle_genres():
     if request.method == 'POST':
         if current_user.is_authenticated:
@@ -267,7 +291,6 @@ def update_genre(id):
 
 
 @api.route('/genre/<int:id>', methods=["GET"])
-@login_required
 def genre(id):
     result = get_genre(id)
     return jsonify({'result': result})

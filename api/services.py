@@ -27,7 +27,6 @@ def get_book(id):
 
 def edit_book(id, data):
     book = Book.query.get(id)
-
     book.title = data['title']
     book.price = data['price']
     book.number_of_pages = data['number_of_pages']

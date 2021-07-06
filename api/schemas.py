@@ -45,7 +45,9 @@ order_schema = {
     "type": "object",
     "properties": {
         "user_id": {"type":["number","string"]},
-        "total": {"type": "number"},
+        "total": {"type": ["number","string"],
+                  "pattern": "[+-]?([0-9]*[.])?[0-9]+"
+                  },
         "date": {"type": "string",
                  "format": "date"
                  },
@@ -56,10 +58,15 @@ order_schema = {
 order_item_schema = {
     "type": "array",
     "properties": {
-        "order_id": {"type": "number"},
-        "quantity": {"type": "number"},
-        "cost": {"type": "number"},
-        "book_id": {"type": "number"}
+        "order_id": {"type": ["number", "string"],
+                     "pattern": "^[0-9]*$"},
+        "quantity": {"type": ["number", "string"],
+                     "pattern": "^[0-9]*$"},
+        "cost": {"type": ["number", "string"],
+                 "pattern": "[+-]?([0-9]*[.])?[0-9]+"
+                 },
+        "book_id": {"type": ["number", "string"],
+                    "pattern": "^[0-9]*$"}
     },
     "required": ["order_id", "quantity", "cost", "book_id"]
 }
@@ -67,10 +74,15 @@ order_item_schema = {
 edit_order_item_schema = {
     "type": "object",
     "properties": {
-        "order_id": {"type": "number"},
-        "quantity": {"type": "number"},
-        "cost": {"type": "number"},
-        "book_id": {"type": "number"}
+        "order_id": {"type": ["number", "string"],
+                     "pattern": "^[0-9]*$"},
+        "quantity": {"type": ["number", "string"],
+                     "pattern": "^[0-9]*$"},
+        "cost": {"type": ["number", "string"],
+                 "pattern": "[+-]?([0-9]*[.])?[0-9]+"
+                 },
+        "book_id": {"type": ["number", "string"],
+                    "pattern": "^[0-9]*$"}
     },
     "required": ["order_id", "quantity", "cost", "book_id"]
 }
@@ -112,7 +124,7 @@ book_schema = {
                   "minLength": 1,
                   "maxLength": 60},
         "price": {"type": ["string", "number"],
-                  "pattern": "^[0-9]*$"},
+                  "pattern": "[+-]?([0-9]*[.])?[0-9]+"},
         "number_of_pages": {"type": ["string", "number"],
                             "pattern": "^[0-9]*$"},
         "year": {"type": ["string", "number"],
