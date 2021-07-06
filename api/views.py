@@ -54,7 +54,6 @@ def update_book(id):
 
 @api.route('/books', methods=["GET", "POST"])
 @expects_json(book_schema, ignore_for=['GET'])
-@login_required
 def handle_books():
     if request.method == 'POST':
         if current_user.is_authenticated:
@@ -79,7 +78,6 @@ def user(id):
 
 @api.route('/users', methods=["GET", "POST"])
 @expects_json(user_schema, ignore_for=['GET'])
-@login_required
 def handle_users():
     if request.method == 'POST':
         if current_user.is_authenticated:
@@ -111,7 +109,6 @@ def update_user(id):
 
 @api.route('/publishers', methods=["GET", "POST"])
 @expects_json(publisher_schema, ignore_for=['GET'])
-@login_required
 def handle_publishers():
     if request.method == 'POST':
         if current_user.is_authenticated:
@@ -149,7 +146,6 @@ def publisher(id):
 
 @api.route('/authors', methods=["GET", "POST"])
 @expects_json(author_schema, ignore_for=['GET'])
-@login_required
 def handle_authors():
     if request.method == 'POST':
         if current_user.is_authenticated:
@@ -172,6 +168,7 @@ def delete_author(id):
 
 
 @api.route('/author/<int:id>', methods=["PUT"])
+@expects_json(author_schema)
 @login_required
 def update_author(id):
     data = request.get_json()
@@ -187,7 +184,6 @@ def author(id):
 
 @api.route('/orders', methods=["GET", "POST"])
 @expects_json(order_schema, ignore_for=['GET'])
-@login_required
 def handle_orders():
     if request.method == 'POST':
         if current_user.is_authenticated:
@@ -226,7 +222,6 @@ def order(id):
 
 @api.route('/order_items', methods=["GET", "POST"])
 @expects_json(order_item_schema, ignore_for=['GET'])
-@login_required
 def handle_order_items():
     if request.method == 'POST':
         if current_user.is_authenticated:
@@ -265,7 +260,6 @@ def update_order_item(id):
 
 @api.route('/genres', methods=["GET", "POST"])
 @expects_json(genre_schema, ignore_for=['GET'])
-@login_required
 def handle_genres():
     if request.method == 'POST':
         if current_user.is_authenticated:

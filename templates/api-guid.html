@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h5>Ответ от сервера:</h5>
+    <ul>
+        <li><h4>Положительный</h4>
+            <ul>
+                <li>
+                    <pre>{"result": 0}</pre>
+                </li>
+                <li>
+                    <pre>{"result": 0, "msg": "текст сообщения"}</pre>
+                </li>
+            </ul>
+        </li>
+        <li><h4>Отрицательный</h4>
+            <ul>
+                <li>
+                    <pre>{"result": 1}</pre>
+                </li>
+                <li>
+                    <pre>{"result": 1, "error": "сообщение о ошибке"}</pre>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <h5>Авторизация </h5> - POST /api/auth
+    <br>
+    <pre>
+            {
+                "username": "username",
+                "password": "password"
+            }
+        </pre>
+    <h5>Пользователи</h5>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">Действие</th>
+            <th scope="col">Метод</th>
+            <th scope="col">URL</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Создать</td>
+            <td>POST</td>
+            <td>/api/users</td>
+        </tr>
+        <tr>
+            <td>Просмотреть все записи</td>
+            <td>GET</td>
+            <td>/api/users</td>
+        </tr>
+        <tr>
+            <td>Просмотреть запись</td>
+            <td>GET</td>
+            <td>/api/user/id</td>
+        </tr>
+        <tr>
+            <td>Удалить запись</td>
+            <td>DELETE</td>
+            <td>/api/user/id</td>
+        </tr>
+        <tr>
+            <td>Редактировать запись</td>
+            <td>PUT</td>
+            <td>/api/user/id</td>
+        </tr>
+        </tbody>
+    </table>
+    <h6>JSON - Схема для POST запроса</h6>
+    <pre>
+        user_schema = {
+            "type": "object",
+            "properties": {
+                "username": {"type": "string",
+                             "minLength": 5,
+                             "maxLength": 15},
+                "name": {"type": "string",
+                         "minLength": 2,
+                         "maxLength": 20,
+                         "pattern": "^[^0-9]+$"},
+                "surname": {"type": "string",
+                            "minLength": 2,
+                            "maxLength": 20,
+                            "pattern": "^[^0-9]+$"},
+                "patronymic": {"type": "string",
+                               "minLength": 2,
+                               "maxLength": 20,
+                               "pattern": "^[^0-9]+$"
+                               },
+                "email": {"type": "string",
+                          "pattern": "[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                          },
+                "password": {"type": "string",
+                             "minLength": 3,
+                             "maxLength": 25
+                             }
+            },
+            "required": ["username", "name", "surname", "patronymic", "email", "password"]
+        }
+        </pre>
+    <h5>Книиг</h5>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">Действие</th>
+            <th scope="col">Метод</th>
+            <th scope="col">URL</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Создать</td>
+            <td>POST</td>
+            <td>/api/books</td>
+        </tr>
+        <tr>
+            <td>Просмотреть все записи</td>
+            <td>GET</td>
+            <td>/api/books</td>
+        </tr>
+        <tr>
+            <td>Просмотреть запись</td>
+            <td>GET</td>
+            <td>/api/book/id</td>
+        </tr>
+        <tr>
+            <td>Удалить запись</td>
+            <td>DELETE</td>
+            <td>/api/book/id</td>
+        </tr>
+        <tr>
+            <td>Редактировать запись</td>
+            <td>PUT</td>
+            <td>/api/book/id</td>
+        </tr>
+        </tbody>
+    </table>
+    <h6>JSON - Схема для POST запроса</h6>
+    <pre>
+        book_schema = {
+            "type": "object",
+            "properties": {
+                "title": {"type": "string",
+                          "minLength": 1,
+                          "maxLength": 60},
+                "price": {"type": ["string", "number"],
+                          "pattern": "[+-]?([0-9]*[.])?[0-9]+"},
+                "number_of_pages": {"type": ["string", "number"],
+                                    "pattern": "^[0-9]*$"},
+                "year": {"type": ["string", "number"],
+                         "pattern": "^[0-9]*$"},
+                "isbn": {"type": "string"},
+                "cover_type": {"type": ["string", "boolean"]},
+                "annotation": {"type": "string",
+                               "minLength": 10,
+                               "maxLength": 500
+                               },
+                "slug": {"type": "string",
+                         "minLength": 2,
+                         "maxLength": 30
+                         },
+                "genre_id": {"type": ["string", "number"],
+                             "pattern": "^[0-9]*$"},
+                "publisher_id": {"type": ["string", "number"],
+                                 "pattern": "^[0-9]*$"},
+                "author_id": {"type": ["string", "number"],
+                              "pattern": "^[0-9]*$"}
+            },
+            "required": ["title", "price", "number_of_pages", "year", "isbn", "cover_type", "annotation", "slug", "genre_id",
+                         "publisher_id", "author_id"]
+        }
+        </pre>
+        <h5>Жанры</h5>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Действие</th>
+                <th scope="col">Метод</th>
+                <th scope="col">URL</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Создать</td>
+                <td>POST</td>
+                <td>/api/genres</td>
+            </tr>
+            <tr>
+                <td>Просмотреть все записи</td>
+                <td>GET</td>
+                <td>/api/genres</td>
+            </tr>
+            <tr>
+                <td>Просмотреть запись</td>
+                <td>GET</td>
+                <td>/api/genre/id</td>
+            </tr>
+            <tr>
+                <td>Удалить запись</td>
+                <td>DELETE</td>
+                <td>/api/genre/id</td>
+            </tr>
+            <tr>
+                <td>Редактировать запись</td>
+                <td>PUT</td>
+                <td>/api/genre/id</td>
+            </tr>
+            </tbody>
+        </table>
+        <h6>JSON - Схема для POST запроса</h6>
+        <pre>
+            genre_schema = {
+                "type": "object",
+                "properties": {
+                    "genre_name": {"type": "string",
+                                   "minLength": 3,
+                                   "maxLength": 50,
+                                   "pattern": "^[^0-9]+$"},
+                },
+                "required": ["genre_name"]
+            }
+        </pre>
+        <h5>Издатели</h5>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Действие</th>
+                <th scope="col">Метод</th>
+                <th scope="col">URL</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Создать</td>
+                <td>POST</td>
+                <td>/api/publishers</td>
+            </tr>
+            <tr>
+                <td>Просмотреть все записи</td>
+                <td>GET</td>
+                <td>/api/publishers</td>
+            </tr>
+            <tr>
+                <td>Просмотреть запись</td>
+                <td>GET</td>
+                <td>/api/publisher/id</td>
+            </tr>
+            <tr>
+                <td>Удалить запись</td>
+                <td>DELETE</td>
+                <td>/api/publisher/id</td>
+            </tr>
+            <tr>
+                <td>Редактировать запись</td>
+                <td>PUT</td>
+                <td>/api/publisher/id</td>
+            </tr>
+            </tbody>
+        </table>
+        <h6>JSON - Схема для POST запроса</h6>
+        <pre>
+            publisher_schema = {
+                "type": "object",
+                "properties": {
+                    "publisher_name": {"type": "string",
+                                       "minLength": 2,
+                                       "maxLength": 50},
+                },
+                "required": ["publisher_name"]
+            }
+        </pre>
+        <h5>Авторы</h5>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Действие</th>
+                <th scope="col">Метод</th>
+                <th scope="col">URL</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Создать</td>
+                <td>POST</td>
+                <td>/api/authors</td>
+            </tr>
+            <tr>
+                <td>Просмотреть все записи</td>
+                <td>GET</td>
+                <td>/api/authors</td>
+            </tr>
+            <tr>
+                <td>Просмотреть запись</td>
+                <td>GET</td>
+                <td>/api/author/id</td>
+            </tr>
+            <tr>
+                <td>Удалить запись</td>
+                <td>DELETE</td>
+                <td>/api/author/id</td>
+            </tr>
+            <tr>
+                <td>Редактировать запись</td>
+                <td>PUT</td>
+                <td>/api/author/id</td>
+            </tr>
+            </tbody>
+        </table>
+        <h6>JSON - Схема для POST запроса</h6>
+        <pre>
+            author_schema = {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string",
+                             "minLength": 2,
+                             "maxLength": 20,
+                             "pattern": "^[^0-9]+$"
+                             },
+                    "surname": {"type": ["string", "null"],
+                                "minLength": 2,
+                                "maxLength": 20,
+                                "pattern": "^[^0-9]+$"
+                                },
+                    "patronymic": {"type": ["string", "null"],
+                                   "minLength": 2,
+                                   "maxLength": 20,
+                                   "pattern": "^[^0-9]+$"
+                                   },
+                },
+                "required": ["name"]
+            }
+        </pre>
+        <h5>Заказы</h5>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Действие</th>
+                <th scope="col">Метод</th>
+                <th scope="col">URL</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Создать</td>
+                <td>POST</td>
+                <td>/api/orders</td>
+            </tr>
+            <tr>
+                <td>Просмотреть все записи</td>
+                <td>GET</td>
+                <td>/api/orders</td>
+            </tr>
+            <tr>
+                <td>Просмотреть запись</td>
+                <td>GET</td>
+                <td>/api/order/id</td>
+            </tr>
+            <tr>
+                <td>Удалить запись</td>
+                <td>DELETE</td>
+                <td>/api/order/id</td>
+            </tr>
+            <tr>
+                <td>Редактировать запись</td>
+                <td>PUT</td>
+                <td>/api/order/id</td>
+            </tr>
+            </tbody>
+        </table>
+        <h6>JSON - Схема для POST запроса</h6>
+        <pre>
+            order_schema = {
+                "type": "object",
+                "properties": {
+                    "user_id": {"type":["number","string"]},
+                    "total": {"type": ["number","string"],
+                              "pattern": "[+-]?([0-9]*[.])?[0-9]+"
+                              },
+                    "date": {"type": "string",
+                             "format": "date"
+                             },
+                },
+                "required": ["user_id", "total", "date"]
+            }
+        </pre>
+        <h5>Позиции заказов</h5>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Действие</th>
+                <th scope="col">Метод</th>
+                <th scope="col">URL</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Создать</td>
+                <td>POST</td>
+                <td>/api/order_items</td>
+            </tr>
+            <tr>
+                <td>Просмотреть все записи</td>
+                <td>GET</td>
+                <td>/api/order_items</td>
+            </tr>
+            <tr>
+                <td>Просмотреть запись</td>
+                <td>GET</td>
+                <td>/api/order_item/id</td>
+            </tr>
+            <tr>
+                <td>Удалить запись</td>
+                <td>DELETE</td>
+                <td>/api/order_item/id</td>
+            </tr>
+            <tr>
+                <td>Редактировать запись</td>
+                <td>PUT</td>
+                <td>/api/order_item/id</td>
+            </tr>
+            </tbody>
+        </table>
+        <h6>JSON - Схема для POST запроса</h6>
+        <h6>Схема для метода создания (передается массив объектов)</h6>
+        <pre>
+            order_item_schema = {
+                "type": "array",
+                "properties": {
+                    "order_id": {"type": ["number", "string"],
+                                 "pattern": "^[0-9]*$"},
+                    "quantity": {"type": ["number", "string"],
+                                 "pattern": "^[0-9]*$"},
+                    "cost": {"type": ["number", "string"],
+                             "pattern": "[+-]?([0-9]*[.])?[0-9]+"
+                             },
+                    "book_id": {"type": ["number", "string"],
+                                "pattern": "^[0-9]*$"}
+                },
+                "required": ["order_id", "quantity", "cost", "book_id"]
+            }
+        </pre>
+        <h6>Схема для метода изменения записи</h6>
+        <pre>
+            edit_order_item_schema = {
+                "type": "object",
+                "properties": {
+                    "order_id": {"type": ["number", "string"],
+                                 "pattern": "^[0-9]*$"},
+                    "quantity": {"type": ["number", "string"],
+                                 "pattern": "^[0-9]*$"},
+                    "cost": {"type": ["number", "string"],
+                             "pattern": "[+-]?([0-9]*[.])?[0-9]+"
+                             },
+                    "book_id": {"type": ["number", "string"],
+                                "pattern": "^[0-9]*$"}
+                },
+                "required": ["order_id", "quantity", "cost", "book_id"]
+            }
+        </pre>
+    <div>
+</body>
+</html>

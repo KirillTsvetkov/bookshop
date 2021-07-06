@@ -41,5 +41,10 @@ def index():
     return render_template("index.html")
 
 
+@app.route('/api_guid', methods=["GET"])
+def api_guid():
+    return render_template("api-guid.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)

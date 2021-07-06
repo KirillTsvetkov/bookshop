@@ -259,8 +259,8 @@ def get_authors():
 def edit_author(id, data):
     author = Author.query.get(id)
     author.name = data['name']
-    author.surname = data['surname']
-    author.patronymic = data['patronymic']
+    author.surname = data.get('surname', None)
+    author.patronymic = data.get('patronymic', None)
     try:
         db.session.commit()
         return {"result": 0}
